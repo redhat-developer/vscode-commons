@@ -1,27 +1,97 @@
-// The module 'vscode' contains the VS Code extensibility API
-// Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
 
-// this method is called when your extension is activated
-// your extension is activated the very first time the command is executed
+import { Event } from './Event';
+import { TelemetryEventQueue } from './TelemetryEventQueue';
+import { Reporter } from './Reporter';
+import { Logger } from './Logger';
+
 export function activate(context: vscode.ExtensionContext) {
+  Reporter.initialize(context);
 
-	// Use the console to output diagnostic information (console.log) and errors (console.error)
-	// This line of code will only be executed once when your extension is activated
-		console.log('Congratulations, your extension "vscode-telemetry" is now active!');
+  if (!getTelemetryEnabledConfig()) {
+    TelemetryEventQueue.initialize();
+  }
 
-	// The command has been defined in the package.json file
-	// Now provide the implementation of the command with registerCommand
-	// The commandId parameter must match the command field in package.json
-	let disposable = vscode.commands.registerCommand('extension.helloWorld', () => {
-		// The code you place here will be executed every time your command is executed
+  openTelemetryOptInDialogIfNeeded(context);
 
-		// Display a message box to the user
-		vscode.window.showInformationMessage('Hello World!');
-	});
+  context.subscriptions.push(onDidChangeTelemetryEnabledToTrue(TelemetryEventQueue.reportAllAndDestroy));
+  context.subscriptions.push(onDidChangeTelemetryEnabledToFalse(TelemetryEventQueue.initialize));
 
-	context.subscriptions.push(disposable);
+  // This command exists only for testing purposes. Should delete later.
+  context.subscriptions.push(vscode.commands.registerCommand('extension.clearContextGlobalState', () => {
+    context.globalState.update('optInRequested', undefined);
+  }));
+
+  if (Reporter.isConnected()) {
+
+    // export to other extensions
+    return Promise.resolve({
+      reportIfOptIn
+    });
+  }
 }
 
-// this method is called when your extension is deactivated
-export function deactivate() {}
+function reportIfOptIn(e: Event) {
+
+  // Logger.log('Event received:');
+  // Logger.log(JSON.stringify(e));
+
+  if (getTelemetryEnabledConfig()) {
+    Reporter.report(e);
+  } else {
+    TelemetryEventQueue.addEvent(e);
+  }
+}
+
+function openTelemetryOptInDialogIfNeeded(context: vscode.ExtensionContext) {
+  const optInRequested: boolean | undefined = context.globalState.get('optInRequested');
+  if (!optInRequested) {
+    vscode.window.showInformationMessage('Java extension would like to report some usage data', 'More Information', 'Accept', 'Deny').then((selection) => {
+      if (!selection) {
+        //close was chosen. Ask next time.
+        return;
+      }
+      if (selection === 'More Information') {
+        //open wiki page
+        openWebPage('https://github.com/redhat-developer/vscode-java/wiki/Usage-reporting');
+        //reopen dialog immediately
+        openTelemetryOptInDialogIfNeeded(context);
+        return;
+      }
+      context.globalState.update('optInRequested', true);
+
+      let optIn: boolean = selection === 'Accept';
+      updateTelemetryEnabledConfig(optIn);
+    });
+  }
+}
+
+function openWebPage(url: string) {
+  vscode.commands.executeCommand('vscode.open', vscode.Uri.parse(url));
+}
+
+function getTelemetryEnabledConfig(): boolean {
+  return vscode.workspace.getConfiguration('redhat.telemetry').get<boolean>('enabled', false);
+}
+
+function updateTelemetryEnabledConfig(value: boolean): Thenable<void> {
+  return vscode.workspace.getConfiguration('redhat.telemetry').update('enabled', value, true);
+}
+
+function onDidChangeTelemetryEnabledToTrue(func: Function, ...args: any[]): vscode.Disposable {
+  return vscode.workspace.onDidChangeConfiguration((e: vscode.ConfigurationChangeEvent) => {
+    if (e.affectsConfiguration('redhat.telemetry.enabled') && getTelemetryEnabledConfig()) {
+      Logger.log('redhat.telemetry.enabled set to true');
+      func(args);
+    }
+  });
+}
+
+function onDidChangeTelemetryEnabledToFalse(func: Function, ...args: any[]): vscode.Disposable {
+  return vscode.workspace.onDidChangeConfiguration((e: vscode.ConfigurationChangeEvent) => {
+    if (e.affectsConfiguration('redhat.telemetry.enabled') && !getTelemetryEnabledConfig()) {
+      Logger.log('redhat.telemetry.enabled set to false');
+      func(args);
+    }
+  });
+}
