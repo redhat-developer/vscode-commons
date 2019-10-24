@@ -1,11 +1,20 @@
 import * as vscode from 'vscode';
 import * as publicIp from 'public-ip';
+import * as fs from 'fs';
+import * as path from 'path';
 import Analytics from 'analytics-node';
 import { Event } from './Event';
 import { Logger } from './Logger';
 
 let analytics: Analytics | undefined;
 let cachedIp: string | undefined;
+
+// For now, write to file instead of sending to segment
+let stream: fs.WriteStream;
+const filename: string = 'file.txt';
+
+// file will be located inside the out/ folder
+const pathToFile: string = path.join(__dirname, filename);
 
 export namespace Reporter {
 
@@ -17,6 +26,13 @@ export namespace Reporter {
     } else {
       vscode.window.showWarningMessage('Missing segmentWriteKey from package.json');
     }
+    
+
+    // For now, write to file instead of sending to segment
+    if (fs.existsSync(pathToFile)) {
+      fs.unlinkSync(pathToFile); // delete file
+    }
+    stream = fs.createWriteStream(pathToFile, { flags: 'a' });
   }
 
   export function report(e: Event): void {
@@ -28,6 +44,9 @@ export namespace Reporter {
         Logger.log('Here is where data is sent to segment');
         Logger.log('The following event is to be sent:');
         Logger.log(JSON.stringify(e));
+
+        // For now, write to file instead of sending to segment
+        stream.write(JSON.stringify(e, null, 4) + '\n\n');
 
         // (analytics as Analytics).track({
         //   anonymousId: vscode.env.machineId || 'vscode.developer',
