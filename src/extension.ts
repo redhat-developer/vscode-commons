@@ -9,7 +9,10 @@ export function activate(context: vscode.ExtensionContext) {
   Reporter.initialize(context);
 
   if (!getTelemetryEnabledConfig()) {
+    Logger.log('redhat.telemetry.enabled is false');
     TelemetryEventQueue.initialize();
+  } else {
+    Logger.log('redhat.telemetry.enabled is true');
   }
 
   openTelemetryOptInDialogIfNeeded(context);
