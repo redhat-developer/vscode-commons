@@ -1,9 +1,9 @@
 {
-  "name": "vscode-telemetry",
-  "displayName": "vscode-telemetry",
+  "name": "vscode-commons",
+  "displayName": "Red Hat common extension",
   "description": "",
   "version": "0.0.1",
-  "publisher": "publisher",
+  "publisher": "redhat",
   "segmentWriteKey": "MXM7iv13sVaCGqOhnQEGLZxhfy6hecYh",
   "engines": {
     "vscode": "^1.37.0"
@@ -28,7 +28,7 @@
         "redhat.telemetry.enabled": {
           "type": "boolean",
           "default": false,
-          "description": "Enable usage data to be sent to Red Hat",
+          "description": "Enable usage data and errors to be sent to Red Hat servers",
           "scope": "window"
         }
       }

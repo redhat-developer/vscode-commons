@@ -50,14 +50,14 @@ function reportIfOptIn(e: Event) {
 function openTelemetryOptInDialogIfNeeded(context: vscode.ExtensionContext) {
   const optInRequested: boolean | undefined = context.globalState.get('optInRequested');
   if (!optInRequested) {
-    vscode.window.showInformationMessage('Java extension would like to report some usage data', 'More Information', 'Accept', 'Deny').then((selection) => {
+    vscode.window.showInformationMessage('Red Hat would like to collect some usage data from its extensions', 'More Information', 'Accept', 'Deny').then((selection) => {
       if (!selection) {
         //close was chosen. Ask next time.
         return;
       }
       if (selection === 'More Information') {
         //open wiki page
-        openWebPage('https://github.com/redhat-developer/vscode-java/wiki/Usage-reporting');
+        openWebPage('https://github.com/xorye/vscode-commons/wiki/Usage-reporting');
         //reopen dialog immediately
         openTelemetryOptInDialogIfNeeded(context);
         return;
