@@ -12,13 +12,13 @@
     "Other"
   ],
   "activationEvents": [
-    "onCommand:extension.clearStateAndSettings"
+    "onCommand:vscodeCommons.clearStateAndSettings"
   ],
   "main": "./out/extension.js",
   "contributes": {
     "commands": [
       {
-        "command": "extension.clearStateAndSettings",
+        "command": "vscodeCommons.clearStateAndSettings",
         "title": "Clear context.globalState and VS Code settings"
       }
     ],

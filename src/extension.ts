@@ -21,10 +21,12 @@ export function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(onDidChangeTelemetryEnabledToFalse(TelemetryEventQueue.initialize));
 
   // This command exists only for testing purposes. Should delete later.
-  context.subscriptions.push(vscode.commands.registerCommand('extension.clearStateAndSettings', () => {
+  context.subscriptions.push(vscode.commands.registerCommand('vscodeCommons.clearStateAndSettings', () => {
     context.globalState.update('optInRequested', undefined);
     vscode.workspace.getConfiguration('redhat.telemetry').update('enabled', undefined, true);
   }));
+
+  context.subscriptions.push(vscode.commands.registerCommand('vscodeCommons.openWebPage', openWebPage));
 
   if (Reporter.isConnected()) {
 
@@ -50,18 +52,17 @@ function reportIfOptIn(e: Event) {
 function openTelemetryOptInDialogIfNeeded(context: vscode.ExtensionContext) {
   const optInRequested: boolean | undefined = context.globalState.get('optInRequested');
   if (!optInRequested) {
-    vscode.window.showInformationMessage('Red Hat would like to collect some usage data from its extensions', 'More Information', 'Accept', 'Deny').then((selection) => {
+
+    const privacyUrl: string = 'https://github.com/xorye/vscode-commons/wiki/Usage-reporting';
+    const command: string = 'vscodeCommons.openWebPage';
+    const message: string = `Red Hat would like to collect some usage data from its extensions. [Read our privacy statement](command:${command}?"${privacyUrl}").`;
+
+    vscode.window.showInformationMessage(message, 'Accept', 'Deny').then((selection) => {
       if (!selection) {
         //close was chosen. Ask next time.
         return;
       }
-      if (selection === 'More Information') {
-        //open wiki page
-        openWebPage('https://github.com/xorye/vscode-commons/wiki/Usage-reporting');
-        //reopen dialog immediately
-        openTelemetryOptInDialogIfNeeded(context);
-        return;
-      }
+
       context.globalState.update('optInRequested', true);
 
       let optIn: boolean = selection === 'Accept';
