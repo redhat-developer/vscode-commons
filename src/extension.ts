@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 
-import { Event } from './Event';
+import { TelemetryEvent } from './TelemetryEvent';
 import { TelemetryEventQueue } from './TelemetryEventQueue';
 import { Reporter } from './Reporter';
 import { Logger } from './Logger';
@@ -37,7 +37,7 @@ export function activate(context: vscode.ExtensionContext) {
   }
 }
 
-function reportIfOptIn(e: Event) {
+function reportIfOptIn(e: TelemetryEvent) {
 
   // Logger.log('Event received:');
   // Logger.log(JSON.stringify(e));

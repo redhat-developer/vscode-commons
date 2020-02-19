@@ -3,7 +3,7 @@ import * as publicIp from 'public-ip';
 import * as fs from 'fs';
 import * as path from 'path';
 import Analytics from 'analytics-node';
-import { Event } from './Event';
+import { TelemetryEvent } from './TelemetryEvent';
 import { Logger } from './Logger';
 
 let analytics: Analytics | undefined;
@@ -35,7 +35,7 @@ export namespace Reporter {
     stream = fs.createWriteStream(pathToFile, { flags: 'a' });
   }
 
-  export function report(e: Event): void {
+  export function report(e: TelemetryEvent): void {
     if (isConnected()) {
       Logger.log('Tracking ' + e.name);
       getIp().then((ip: string) => {
