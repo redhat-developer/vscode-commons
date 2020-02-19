@@ -17,8 +17,7 @@ export function activate(context: vscode.ExtensionContext) {
 
   openTelemetryOptInDialogIfNeeded(context);
 
-  context.subscriptions.push(onDidChangeTelemetryEnabledToTrue(TelemetryEventQueue.reportAllAndDestroy));
-  context.subscriptions.push(onDidChangeTelemetryEnabledToFalse(TelemetryEventQueue.initialize));
+  context.subscriptions.push(onDidChangeTelemetryEnabled());
 
   // This command exists only for testing purposes. Should delete later.
   context.subscriptions.push(vscode.commands.registerCommand('vscodeCommons.clearStateAndSettings', () => {
@@ -83,20 +82,17 @@ function updateTelemetryEnabledConfig(value: boolean): Thenable<void> {
   return vscode.workspace.getConfiguration('redhat.telemetry').update('enabled', value, true);
 }
 
-function onDidChangeTelemetryEnabledToTrue(func: Function, ...args: any[]): vscode.Disposable {
+function onDidChangeTelemetryEnabled(): vscode.Disposable {
   return vscode.workspace.onDidChangeConfiguration((e: vscode.ConfigurationChangeEvent) => {
-    if (e.affectsConfiguration('redhat.telemetry.enabled') && getTelemetryEnabledConfig()) {
-      Logger.log('redhat.telemetry.enabled set to true');
-      func(args);
+    if (!e.affectsConfiguration('redhat.telemetry.enabled')) {
+      return;
     }
-  });
-}
-
-function onDidChangeTelemetryEnabledToFalse(func: Function, ...args: any[]): vscode.Disposable {
-  return vscode.workspace.onDidChangeConfiguration((e: vscode.ConfigurationChangeEvent) => {
-    if (e.affectsConfiguration('redhat.telemetry.enabled') && !getTelemetryEnabledConfig()) {
+    if (getTelemetryEnabledConfig()) {
+      Logger.log('redhat.telemetry.enabled set to true');
+      TelemetryEventQueue.reportAllAndDestroy();
+    } else {
       Logger.log('redhat.telemetry.enabled set to false');
-      func(args);
+      TelemetryEventQueue.initialize();
     }
   });
 }
