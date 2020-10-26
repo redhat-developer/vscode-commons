@@ -5,6 +5,8 @@ import { TelemetryEventQueue } from './TelemetryEventQueue';
 import { Reporter } from './Reporter';
 import { Logger } from './Logger';
 
+const OPTIN_REQUESTED_KEY = 'redhat.telemetry.optInRequested';
+
 export function activate(context: vscode.ExtensionContext) {
   Reporter.initialize(context);
 
@@ -28,7 +30,6 @@ export function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(vscode.commands.registerCommand('vscodeCommons.openWebPage', openWebPage));
 
   if (Reporter.isConnected()) {
-
     // export to other extensions
     return Promise.resolve({
       reportIfOptIn
@@ -49,10 +50,9 @@ function reportIfOptIn(e: TelemetryEvent) {
 }
 
 function openTelemetryOptInDialogIfNeeded(context: vscode.ExtensionContext) {
-  const optInRequested: boolean | undefined = context.globalState.get('optInRequested');
+  const optInRequested: boolean | undefined = context.globalState.get(OPTIN_REQUESTED_KEY);
   if (!optInRequested) {
-
-    const privacyUrl: string = 'https://github.com/xorye/vscode-commons/wiki/Usage-reporting';
+    const privacyUrl: string = 'https://github.com/redhat-developer/vscode-commons/wiki/Usage-reporting';
     const command: string = 'vscodeCommons.openWebPage';
     const message: string = `Red Hat would like to collect some usage data from its extensions. [Read our privacy statement](command:${command}?"${privacyUrl}").`;
 
@@ -62,7 +62,7 @@ function openTelemetryOptInDialogIfNeeded(context: vscode.ExtensionContext) {
         return;
       }
 
-      context.globalState.update('optInRequested', true);
+      context.globalState.update(OPTIN_REQUESTED_KEY, true);
 
       let optIn: boolean = selection === 'Accept';
       updateTelemetryEnabledConfig(optIn);
