@@ -1,5 +1,4 @@
-import { TelemetryEvent } from './TelemetryEvent';
-import { Reporter } from './Reporter';
+import { TelemetryEvent } from "../interfaces/telemetryEvent";
 
 let queue: TelemetryEvent[] | undefined;
 export namespace TelemetryEventQueue {
@@ -13,10 +12,10 @@ export namespace TelemetryEventQueue {
     }
   }
 
-  export function reportAllAndDestroy() {
-    if (queue) {
-      queue.forEach((e: TelemetryEvent) => Reporter.report(e));
-    }
+  export function deInitialize() {
     queue = undefined;
+  }
+  export function getQueue() {
+    return queue;
   }
 }
