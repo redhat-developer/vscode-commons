@@ -49,7 +49,7 @@ export namespace Reporter {
       queue.forEach((event: TelemetryEvent) => {
         report(event);
       });
-      TelemetryEventQueue.deInitialize();
+      TelemetryEventQueue.dispose();
     }
   }
 

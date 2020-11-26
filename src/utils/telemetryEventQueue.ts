@@ -12,7 +12,7 @@ export namespace TelemetryEventQueue {
     }
   }
 
-  export function deInitialize() {
+  export function dispose() {
     queue = undefined;
   }
   export function getQueue() {
