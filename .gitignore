@@ -61,9 +61,7 @@ npm-debug.log
 target/
 
 # NPM/Yarn #
-
 npm-debug.log*
-
 /lib
 /lib-legacy
 *.log
