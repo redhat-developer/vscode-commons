@@ -1,7 +1,7 @@
 {
   "name": "vscode-commons",
   "displayName": "Red Hat Commons",
-  "description": "Base utilities for Red Hat extensions",
+  "description": "Base utilities for Red Hat extensions. Notably controls Telemetry settings.",
   "version": "0.0.1",
   "publisher": "redhat",
   "segmentWriteKey": "Ga2frlNQ8nsYjF8PEGsbdjhCy3VJdncB",
