@@ -1,7 +1,7 @@
 {
   "name": "vscode-commons",
-  "displayName": "Red Hat common extension",
-  "description": "Telemetry Middleware",
+  "displayName": "Red Hat Commons",
+  "description": "Base utilities for Red Hat extensions",
   "version": "0.0.1",
   "publisher": "redhat",
   "segmentWriteKey": "Ga2frlNQ8nsYjF8PEGsbdjhCy3VJdncB",
@@ -12,11 +12,16 @@
     "Other"
   ],
   "activationEvents": [
+    "onCommand:vscodeCommons.clearStateAndSettings",
     "onCommand:vscodeCommons.showTelemetryStatus"
   ],
   "main": "./dist/extension.js",
   "contributes": {
     "commands": [
+      {
+        "command": "vscodeCommons.clearStateAndSettings",
+        "title": "Clear context.globalState and VS Code settings"
+      },
       {
         "command": "vscodeCommons.showTelemetryStatus",
         "title": "Show Telemetry Status"
