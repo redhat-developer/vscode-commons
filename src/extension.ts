@@ -2,7 +2,6 @@ import * as vscode from "vscode";
 import { Logger } from "./utils/logger";
 import { TelemetryEventQueue } from "./utils/telemetryEventQueue";
 import { TelemetryService } from "./services/telemetryService";
-import { Reporter } from "./reporter";
 
 // this method is called when your extension is activated
 export function activate(context: vscode.ExtensionContext) {
@@ -63,14 +62,11 @@ export function activate(context: vscode.ExtensionContext) {
     These APIs can be used in by other extensions as exports
     Please view INTEGRATION.md for more details
   */
-  // if (analytics) {
-  //   Reporter.setAnalytics(analytics);
-  //   // export to other extensions
-  //   return Promise.resolve({
-  //     telemetryData,
-  //     viewMessage,
-  //   });
-  // }
+  // export to other extensions
+  return Promise.resolve({
+    TelemetryService,
+    viewMessage,
+  });
 }
 
 /* Basic test api MUST BE REMOVED LATER */

@@ -1,12 +1,12 @@
-import * as vscode from "vscode";
-import { Logger } from "./utils/logger";
+import { Logger } from "./logger";
 import Analytics from "analytics-node";
 
 export namespace SegmentInitializer {
   export function initialize(
-    context: vscode.ExtensionContext
+    clientSegmentKey: string | undefined = undefined
   ): Analytics | undefined {
-    const segmentWriteKey: string | undefined = getSegmentWriteKey();
+    const segmentWriteKey: string | undefined =
+      clientSegmentKey || getSegmentWriteKey();
 
     if (segmentWriteKey) {
       /* 
@@ -20,8 +20,8 @@ export namespace SegmentInitializer {
       });
       return analytics;
     } else {
-      vscode.window.showWarningMessage(
-        "Missing segmentWriteKey from package.json"
+      Logger.log(
+        "Missing segmentWriteKey from package.json OR package.json in vscode-commons"
       );
       return undefined;
     }
@@ -30,7 +30,7 @@ export namespace SegmentInitializer {
 
 function getSegmentWriteKey(): string | undefined {
   try {
-    let extensionPackage = require("../package.json");
+    let extensionPackage = require("../../package.json");
     if (extensionPackage) {
       Logger.log(
         `Found package.json. segmentWriteKey is: ${extensionPackage.segmentWriteKey}`
@@ -41,5 +41,6 @@ function getSegmentWriteKey(): string | undefined {
     return undefined;
   } catch (error) {
     Logger.log(`Error in getSegmentWriteKey`);
+    return undefined;
   }
 }

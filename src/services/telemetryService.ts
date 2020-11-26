@@ -1,7 +1,9 @@
 import * as vscode from "vscode";
+import Analytics from "analytics-node";
 import { TelemetryEvent } from "../interfaces/telemetryEvent";
 import { Reporter } from "../reporter";
 import { Logger } from "../utils/logger";
+import { SegmentInitializer } from "../utils/segmentInitializer";
 import { TelemetryEventQueue } from "../utils/telemetryEventQueue";
 
 /* 
@@ -11,28 +13,50 @@ import { TelemetryEventQueue } from "../utils/telemetryEventQueue";
 const OPT_IN_STATUS = "redhat.telemetry.optInRequested";
 
 export namespace TelemetryService {
+  let analyticsObject: Analytics | undefined;
+
   /* 
-  Collects telemetry data and pushes to a queue when not opted in
-  and to segment when user has enabled telemetry 
-*/
-  export function telemetryData(e: TelemetryEvent) {
+    provides subscription to custom segment key.
+    fallback to default segment key if no key provided via API
+  */
+  export function subscribeTelemetryService(
+    context: vscode.ExtensionContext
+  ): boolean {
+    const CLIENT_SEGMENT_KEY: string | undefined = context.globalState.get(
+      "SEGMENT_KEY"
+    );
+    analyticsObject = SegmentInitializer.initialize(CLIENT_SEGMENT_KEY);
+    return analyticsObject != undefined;
+  }
+
+  /* 
+    Collects telemetry data and pushes to a queue when not opted in
+    and to segment when user has opted for telemetry 
+  */
+  export function sendEvent(event: TelemetryEvent) {
     Logger.log("Event received:");
-    Logger.log(e.extensionName);
+    Logger.log(event.extensionName);
     if (getTelemetryEnabledConfig()) {
-      // dequeue the existing queue
-      TelemetryEventQueue.getQueue()?.length &&
-        Reporter.reportQueue(TelemetryEventQueue.getQueue());
-      // report event to segment
-      Reporter.report(e);
+      if (analyticsObject) {
+        // setting analyticsObject for reporting
+        Reporter.setAnalytics(analyticsObject);
+        // dequeue the existing queue
+        TelemetryEventQueue.getQueue()?.length &&
+          Reporter.reportQueue(TelemetryEventQueue.getQueue());
+        // report event to segment
+        Reporter.report(event);
+      } else {
+        Logger.log("analytics was not initialized in vscode-commons");
+      }
     } else {
-      TelemetryEventQueue.addEvent(e);
+      TelemetryEventQueue.addEvent(event);
     }
   }
 
   /* 
       Checks the current telemetry configuration(package.json) 
       returns "true if telemetry is enabled 
-              "false" if it is not-enable or undefined(default value)"
+      returns "false" if it is not-enable or undefined(default value)"
   */
   export function getTelemetryEnabledConfig(): boolean {
     return vscode.workspace

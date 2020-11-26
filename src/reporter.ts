@@ -5,7 +5,7 @@ import { Logger } from "./utils/logger";
 import { TelemetryEventQueue } from "./utils/telemetryEventQueue";
 
 export namespace Reporter {
-  let analytics: Analytics | undefined;
+  let analytics: Analytics;
 
   export function report(event: TelemetryEvent) {
     if (analyticsExists()) {
@@ -18,29 +18,30 @@ export namespace Reporter {
       switch (event.type) {
         case "identify":
           getAnalytics()?.identify({
-            anonymousId:
-              event.uuid || vscode.env.machineId || "vscode.developer",
+            anonymousId: event.uuid || getRedHatUUID(),
             traits: payload,
           });
           break;
         case "track":
           getAnalytics()?.track({
-            anonymousId:
-              event.uuid || vscode.env.machineId || "vscode.developer",
+            anonymousId: event.uuid || getRedHatUUID(),
             event: event.name || "track.event",
             properties: event.properties ? event.properties : event.measures,
           });
           break;
         case "page":
           getAnalytics()?.page({
-            anonymousId:
-              event.uuid || vscode.env.machineId || "vscode.developer",
+            anonymousId: event.uuid || getRedHatUUID(),
           });
           break;
         default:
           break;
       }
     }
+  }
+
+  function getRedHatUUID() {
+    return vscode.env.machineId || "vscode.developer";
   }
 
   export function reportQueue(queue: TelemetryEvent[] | undefined) {
