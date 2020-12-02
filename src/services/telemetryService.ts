@@ -74,7 +74,7 @@ export namespace TelemetryService {
 
     if (!optInRequested) {
       const privacyUrl: string =
-        "https://github.com/redhat-developer/vscode-commons/wiki/Usage-reporting";
+        "https://developers.redhat.com/article/tool-data-collection";
       const optOutUrl: string =
         "https://github.com/redhat-developer/vscode-commons/wiki/Usage-reporting";
       const command: string = "vscodeCommons.openWebPage";
