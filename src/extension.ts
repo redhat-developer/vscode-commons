@@ -1,7 +1,7 @@
-import * as vscode from "vscode";
-import { Logger } from "./utils/logger";
-import { TelemetryEventQueue } from "./utils/telemetryEventQueue";
-import { TelemetryService } from "./services/telemetryService";
+import * as vscode from 'vscode';
+import { Logger } from './utils/logger';
+import { TelemetryEventQueue } from './utils/telemetryEventQueue';
+import { TelemetryService } from './services/telemetryService';
 
 // this method is called when your extension is activated
 export function activate(context: vscode.ExtensionContext) {
@@ -12,17 +12,17 @@ export function activate(context: vscode.ExtensionContext) {
     initialize events queue to preserve events 
   */
   if (!TelemetryService.getTelemetryEnabledConfig()) {
-    Logger.log("redhat.telemetry.enabled is false");
+    Logger.log('redhat.telemetry.enabled is false');
     TelemetryEventQueue.initialize();
   } else {
-    Logger.log("redhat.telemetry.enabled is true");
+    Logger.log('redhat.telemetry.enabled is true');
   }
 
   TelemetryService.openTelemetryOptInDialogIfNeeded(context);
 
   context.subscriptions.push(
     vscode.commands.registerCommand(
-      "vscodeCommons.openWebPage",
+      'vscodeCommons.openWebPage',
       TelemetryService.openWebPage
     )
   );
@@ -37,7 +37,7 @@ export function activate(context: vscode.ExtensionContext) {
     extension through command pallet can be removed later 
   */
   context.subscriptions.push(
-    vscode.commands.registerCommand("vscodeCommons.showTelemetryStatus", () => {
+    vscode.commands.registerCommand('vscodeCommons.showTelemetryStatus', () => {
       vscode.window.showInformationMessage(
         `Red Hat Telemetry Enabled: ${TelemetryService.getTelemetryEnabledConfig()}`
       );
@@ -47,12 +47,12 @@ export function activate(context: vscode.ExtensionContext) {
   // This command exists only for testing purposes. Should delete later.
   context.subscriptions.push(
     vscode.commands.registerCommand(
-      "vscodeCommons.clearStateAndSettings",
+      'vscodeCommons.clearStateAndSettings',
       () => {
-        context.globalState.update("OPT_IN_STATUS", undefined);
+        context.globalState.update('OPT_IN_STATUS', undefined);
         vscode.workspace
-          .getConfiguration("redhat.telemetry")
-          .update("enabled", undefined, true);
+          .getConfiguration('redhat.telemetry')
+          .update('enabled', undefined, true);
       }
     )
   );
@@ -90,13 +90,13 @@ disposables — An array to which a disposable will be added.
 function onDidChangeTelemetryEnabled(): vscode.Disposable {
   return vscode.workspace.onDidChangeConfiguration(
     (e: vscode.ConfigurationChangeEvent) => {
-      if (!e.affectsConfiguration("redhat.telemetry.enabled")) {
+      if (!e.affectsConfiguration('redhat.telemetry.enabled')) {
         return;
       }
       if (TelemetryService.getTelemetryEnabledConfig()) {
-        Logger.log("redhat.telemetry.enabled set to true");
+        Logger.log('redhat.telemetry.enabled set to true');
       } else {
-        Logger.log("redhat.telemetry.enabled set to false");
+        Logger.log('redhat.telemetry.enabled set to false');
         TelemetryEventQueue.initialize();
       }
     }
@@ -104,4 +104,5 @@ function onDidChangeTelemetryEnabled(): vscode.Disposable {
 }
 
 // this method is called when your extension is deactivated
+// tslint:disable-next-line: no-empty
 export function deactivate() {}

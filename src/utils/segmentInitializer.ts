@@ -1,5 +1,5 @@
-import { Logger } from "./logger";
-import Analytics from "analytics-node";
+import { Logger } from './logger';
+import Analytics from 'analytics-node';
 
 export namespace SegmentInitializer {
   export function initialize(
@@ -21,7 +21,7 @@ export namespace SegmentInitializer {
       return analytics;
     } else {
       Logger.log(
-        "Missing segmentWriteKey from package.json OR package.json in vscode-commons"
+        'Missing segmentWriteKey from package.json OR package.json in vscode-commons'
       );
       return undefined;
     }
@@ -30,7 +30,8 @@ export namespace SegmentInitializer {
 
 function getSegmentWriteKey(): string | undefined {
   try {
-    let extensionPackage = require("../../package.json");
+    // tslint:disable-next-line: no-require-imports
+    let extensionPackage = require('../../package.json');
     if (extensionPackage) {
       Logger.log(
         `Found package.json. segmentWriteKey is: ${extensionPackage.segmentWriteKey}`

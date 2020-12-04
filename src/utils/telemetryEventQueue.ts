@@ -1,4 +1,4 @@
-import { TelemetryEvent } from "../interfaces/telemetryEvent";
+import { TelemetryEvent } from '../interfaces/telemetryEvent';
 
 let queue: TelemetryEvent[] | undefined;
 export namespace TelemetryEventQueue {

@@ -1,8 +1,7 @@
-import * as vscode from "vscode";
-import Analytics from "analytics-node";
-import { TelemetryEvent } from "./interfaces/telemetryEvent";
-import { Logger } from "./utils/logger";
-import { TelemetryEventQueue } from "./utils/telemetryEventQueue";
+import * as vscode from 'vscode';
+import Analytics from 'analytics-node';
+import { TelemetryEvent } from './interfaces/telemetryEvent';
+import { TelemetryEventQueue } from './utils/telemetryEventQueue';
 
 export namespace Reporter {
   let analytics: Analytics;
@@ -16,20 +15,20 @@ export namespace Reporter {
         measures: event.measures,
       };
       switch (event.type) {
-        case "identify":
+        case 'identify':
           getAnalytics()?.identify({
             anonymousId: event.uuid || getRedHatUUID(),
             traits: payload,
           });
           break;
-        case "track":
+        case 'track':
           getAnalytics()?.track({
             anonymousId: event.uuid || getRedHatUUID(),
-            event: event.name || "track.event",
+            event: event.name || 'track.event',
             properties: event.properties ? event.properties : event.measures,
           });
           break;
-        case "page":
+        case 'page':
           getAnalytics()?.page({
             anonymousId: event.uuid || getRedHatUUID(),
           });
@@ -41,7 +40,7 @@ export namespace Reporter {
   }
 
   function getRedHatUUID() {
-    return vscode.env.machineId || "vscode.developer";
+    return vscode.env.machineId || 'vscode.developer';
   }
 
   export function reportQueue(queue: TelemetryEvent[] | undefined) {
@@ -60,6 +59,6 @@ export namespace Reporter {
     return analytics;
   }
   export function analyticsExists() {
-    return typeof analytics !== "undefined" && analytics !== null;
+    return typeof analytics !== 'undefined' && analytics !== null;
   }
 }
