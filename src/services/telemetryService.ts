@@ -5,6 +5,7 @@ import { Reporter } from '../reporter';
 import { Logger } from '../utils/logger';
 import { SegmentInitializer } from '../utils/segmentInitializer';
 import { TelemetryEventQueue } from '../utils/telemetryEventQueue';
+import { privacyUrl, optOutUrl } from '../utils/constants';
 
 /* 
   OPT_IN_STATUS == "true" if user Agreed
@@ -92,10 +93,6 @@ export namespace TelemetryService {
     Logger.log(`optInRequested is: ${optInRequested}`);
 
     if (!optInRequested) {
-      const privacyUrl: string =
-        'https://developers.redhat.com/article/tool-data-collection';
-      const optOutUrl: string =
-        'https://github.com/redhat-developer/vscode-commons/wiki/Usage-reporting';
       const command: string = 'vscodeCommons.openWebPage';
       const message: string = `Help Red Hat improve its extensions by allowing them to collect usage data. 
                               Read our [privacy statement](command:${command}?"${privacyUrl}") 
