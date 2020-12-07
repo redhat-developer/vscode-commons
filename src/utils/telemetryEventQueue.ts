@@ -7,7 +7,7 @@ export namespace TelemetryEventQueue {
     queue = [];
   }
   /*
-    split() should work fine until we choose to have high MAX_QUEUE_SIZE
+    shift() should work fine until we choose to have high MAX_QUEUE_SIZE
    */
   export function addEvent(e: TelemetryEvent) {
     if (queue?.length === MAX_QUEUE_SIZE) {
