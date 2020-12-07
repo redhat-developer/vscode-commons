@@ -64,9 +64,14 @@ export function activate(context: vscode.ExtensionContext) {
   */
   // export to other extensions
   return Promise.resolve({
-    TelemetryService,
+    getTelemetryService,
     viewMessage,
   });
+}
+
+function getTelemetryService(clientExtensionName: string) {
+  TelemetryService.subscribeTelemetryService(clientExtensionName);
+  return TelemetryService;
 }
 
 /* Basic test api MUST BE REMOVED LATER */

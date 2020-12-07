@@ -20,13 +20,29 @@ export namespace TelemetryService {
     fallback to default segment key if no key provided via API
   */
   export function subscribeTelemetryService(
-    context: vscode.ExtensionContext
+    clientExtensionName: string
   ): boolean {
-    const CLIENT_SEGMENT_KEY: string | undefined = context.globalState.get(
-      'SEGMENT_KEY'
+    const CLIENT_SEGMENT_KEY: string | undefined = getClientSegmentKey(
+      clientExtensionName
     );
     analyticsObject = SegmentInitializer.initialize(CLIENT_SEGMENT_KEY);
     return analyticsObject !== undefined;
+  }
+
+  function getClientSegmentKey(
+    clientExtensionName: string
+  ): string | undefined {
+    try {
+      const clientPackageJson = vscode.extensions.getExtension(
+        clientExtensionName
+      )?.packageJSON;
+      const clientSegmentKey = clientPackageJson['segmentWriteKey'];
+      Logger.log(`client Segment-Key : ${clientSegmentKey}`);
+      return clientSegmentKey;
+    } catch (error) {
+      Logger.log('Unable to get Client Segment-Key');
+    }
+    return undefined;
   }
 
   /* 
@@ -35,7 +51,7 @@ export namespace TelemetryService {
   */
   export function sendEvent(event: TelemetryEvent) {
     Logger.log('Event received:');
-    Logger.log(event.extensionName);
+    Logger.log(event.uuid);
     if (getTelemetryEnabledConfig()) {
       if (analyticsObject) {
         // setting analyticsObject for reporting

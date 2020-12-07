@@ -1,4 +1,4 @@
-## Add in package.json for auto download of vscode-commons
+## Add "redhat.vscode-commons" as extension dependency in package.json file for auto download of vscode-commons
 
 - Dependencies to other extensions. The identifier of an extension is always ${publisher}.${name}. For example: vscode.csharp.
 
@@ -6,11 +6,20 @@
   "extensionDependencies": ["redhat.vscode-commons"],
 ```
 
+## Add your custom segment key in package.json file
+
+- This key will be used to connect and push usage data to segment
+
+```
+    "segmentWriteKey": "your-segment-key-goes-here",
+```
+
+> **NOTE** Default segment key will be used if you do not provide a custom segment key
+
 ## Add the bellow code in your client extensions
 
 ```
 interface TelemetryEvent {
-  extensionName: string; // name of extension
   uuid?: string;
   type?: string; // type of telemetry event such as : identify, track, page, etc.
   name?: string;
@@ -19,14 +28,7 @@ interface TelemetryEvent {
 }
 
 async function telemetry(context: vscode.ExtensionContext) {
-  /*
-    Set segment_key in context.globalState
-    provide your custom segment key or comment below two lines
-  */
-  const SEGMENT_KEY = "abcdefghijklmnopqrstuvwxyz";
-  context.globalState.update("SEGMENT_KEY", SEGMENT_KEY);
-
-  // To get an instance of the Extension
+  // To get an instance of "redhat.vscode-commons"
   const vscodeCommons = vscode.extensions.getExtension("redhat.vscode-commons");
   let vscodeCommonsIsAlive = false;
 
@@ -47,21 +49,22 @@ async function telemetry(context: vscode.ExtensionContext) {
   }
 
   if (vscodeCommonsIsAlive) {
-    let vscodeCommonsAPI = vscodeCommons?.exports;
-    let telemetryService = vscodeCommonsAPI.TelemetryService;
-    /*
-    returns true if subscribed else returns false. A "MUST HAVE" CALL
-    set segment key in globalState (SEGMENT_KEY), if not found, default segment key will be used
-    */
-    let subscriptionStatus: boolean = telemetryService.subscribeTelemetryService(
-      context
-    );
-    console.log(subscriptionStatus, "subscriptionStatus");
+    const extensionIdentifier = "redhat.alice";
+    const vscodeCommonsAPI = vscodeCommons?.exports;
 
-    if (subscriptionStatus) {
+    /*
+    A "MUST HAVE" CALL
+    set segment key in package.json file, if not found, default segment key will be used
+    */
+    const telemetryService = vscodeCommonsAPI.getTelemetryService(
+      extensionIdentifier
+    );
+    context.subscriptions.push(telemetryService);
+
+    if (telemetryService) {
       let event: TelemetryEvent = {
-        extensionName: "redhat.extensionName",
         type: "track",
+        uuid: "redhat123321",
       };
       telemetryService.sendEvent({ ...event });
     }
