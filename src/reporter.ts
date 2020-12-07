@@ -5,11 +5,12 @@ import { TelemetryEventQueue } from './utils/telemetryEventQueue';
 
 export namespace Reporter {
   let analytics: Analytics;
+  let extensionName: string;
 
   export function report(event: TelemetryEvent) {
     if (analyticsExists()) {
       let payload = {
-        extensionName: event.extensionName,
+        extensionName: extensionName,
         name: event.name,
         properties: event.properties,
         measures: event.measures,
@@ -25,7 +26,7 @@ export namespace Reporter {
           getAnalytics()?.track({
             anonymousId: event.uuid || getRedHatUUID(),
             event: event.name || 'track.event',
-            properties: event.properties ? event.properties : event.measures,
+            properties: event.properties || event.measures,
           });
           break;
         case 'page':
@@ -50,6 +51,10 @@ export namespace Reporter {
       });
       TelemetryEventQueue.dispose();
     }
+  }
+
+  export function setClientExtensionName(extensionName: string) {
+    extensionName = extensionName;
   }
 
   export function setAnalytics(analyticsObject: Analytics) {

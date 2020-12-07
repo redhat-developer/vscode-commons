@@ -22,6 +22,7 @@ export namespace TelemetryService {
   export function subscribeTelemetryService(
     clientExtensionName: string
   ): boolean {
+    Reporter.setClientExtensionName(clientExtensionName);
     const CLIENT_SEGMENT_KEY: string | undefined = getClientSegmentKey(
       clientExtensionName
     );
