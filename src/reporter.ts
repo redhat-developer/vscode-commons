@@ -6,6 +6,7 @@ import { TelemetryEventQueue } from './utils/telemetryEventQueue';
 export namespace Reporter {
   let analytics: Analytics;
   let extensionName: string;
+  let clientUUID: string;
 
   export function report(event: TelemetryEvent) {
     if (analyticsExists()) {
@@ -18,20 +19,20 @@ export namespace Reporter {
       switch (event.type) {
         case 'identify':
           getAnalytics()?.identify({
-            anonymousId: event.uuid || getRedHatUUID(),
+            anonymousId: clientUUID || getRedHatUUID(),
             traits: payload,
           });
           break;
         case 'track':
           getAnalytics()?.track({
-            anonymousId: event.uuid || getRedHatUUID(),
+            anonymousId: clientUUID || getRedHatUUID(),
             event: event.name || 'track.event',
             properties: event.properties || event.measures,
           });
           break;
         case 'page':
           getAnalytics()?.page({
-            anonymousId: event.uuid || getRedHatUUID(),
+            anonymousId: clientUUID || getRedHatUUID(),
           });
           break;
         default:
@@ -55,6 +56,9 @@ export namespace Reporter {
 
   export function setClientExtensionName(extensionName: string) {
     extensionName = extensionName;
+  }
+  export function setClientUUID(clientUUID: string) {
+    clientUUID = clientUUID;
   }
 
   export function setAnalytics(analyticsObject: Analytics) {

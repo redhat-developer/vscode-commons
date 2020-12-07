@@ -20,7 +20,6 @@
 
 ```
 interface TelemetryEvent {
-  uuid?: string;
   type?: string; // type of telemetry event such as : identify, track, page, etc.
   name?: string;
   properties?: any;
@@ -50,6 +49,7 @@ async function telemetry(context: vscode.ExtensionContext) {
 
   if (vscodeCommonsIsAlive) {
     const extensionIdentifier = "redhat.alice";
+    const uuid = "redhat@123";
     const vscodeCommonsAPI = vscodeCommons?.exports;
 
     /*
@@ -57,14 +57,15 @@ async function telemetry(context: vscode.ExtensionContext) {
     set segment key in package.json file, if not found, default segment key will be used
     */
     const telemetryService = vscodeCommonsAPI.getTelemetryService(
-      extensionIdentifier
+      extensionIdentifier,
+      uuid
     );
     context.subscriptions.push(telemetryService);
 
     if (telemetryService) {
       let event: TelemetryEvent = {
         type: "track",
-        uuid: "redhat123321",
+        name: "Test Event",
       };
       telemetryService.sendEvent({ ...event });
     }

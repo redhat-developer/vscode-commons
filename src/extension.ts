@@ -69,8 +69,8 @@ export function activate(context: vscode.ExtensionContext) {
   });
 }
 
-function getTelemetryService(clientExtensionName: string) {
-  TelemetryService.subscribeTelemetryService(clientExtensionName);
+function getTelemetryService(clientExtensionName: string, clientUUID: string) {
+  TelemetryService.subscribeTelemetryService(clientExtensionName, clientUUID);
   return TelemetryService;
 }
 

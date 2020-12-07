@@ -20,9 +20,11 @@ export namespace TelemetryService {
     fallback to default segment key if no key provided via API
   */
   export function subscribeTelemetryService(
-    clientExtensionName: string
+    clientExtensionName: string,
+    clientUUID: string
   ): boolean {
     Reporter.setClientExtensionName(clientExtensionName);
+    Reporter.setClientUUID(clientUUID);
     const CLIENT_SEGMENT_KEY: string | undefined = getClientSegmentKey(
       clientExtensionName
     );
@@ -51,8 +53,7 @@ export namespace TelemetryService {
     and to segment when user has opted for telemetry 
   */
   export function sendEvent(event: TelemetryEvent) {
-    Logger.log('Event received:');
-    Logger.log(event.uuid);
+    Logger.log(`Event received: ${event.name}`);
     if (getTelemetryEnabledConfig()) {
       if (analyticsObject) {
         // setting analyticsObject for reporting
