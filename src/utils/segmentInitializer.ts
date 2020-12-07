@@ -6,7 +6,7 @@ export namespace SegmentInitializer {
     clientSegmentKey: string | undefined = undefined
   ): Analytics | undefined {
     const segmentWriteKey: string | undefined =
-      clientSegmentKey || getSegmentWriteKey();
+      clientSegmentKey || getDefaultSegmentWriteKey();
 
     if (segmentWriteKey) {
       /* 
@@ -28,7 +28,7 @@ export namespace SegmentInitializer {
   }
 }
 
-function getSegmentWriteKey(): string | undefined {
+function getDefaultSegmentWriteKey(): string | undefined {
   try {
     // tslint:disable-next-line: no-require-imports
     let extensionPackage = require('../../package.json');
