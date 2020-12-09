@@ -32,17 +32,17 @@ async function telemetry(context: vscode.ExtensionContext) {
   let vscodeCommonsIsAlive = false;
 
   if (vscodeCommons?.isActive) {
-    console.log("redhat.vscode-commons is active");
+    console.log("alice: redhat.vscode-commons is active");
     vscodeCommonsIsAlive = true;
   } else {
-    console.log("redhat.vscode-commons is not active");
+    console.log("alice: redhat.vscode-commons is not active");
     await vscodeCommons?.activate().then(
       function () {
-        console.log("redhat.vscode-commons activated");
+        console.log("alice: redhat.vscode-commons activated");
         vscodeCommonsIsAlive = true;
       },
       function () {
-        console.log("redhat.vscode-commons activation failed");
+        console.log("alice: redhat.vscode-commons activation failed");
       }
     );
   }
@@ -57,8 +57,7 @@ async function telemetry(context: vscode.ExtensionContext) {
     set segment key in package.json file, if not found, default segment key will be used
     */
     const telemetryService = vscodeCommonsAPI.getTelemetryService(
-      extensionIdentifier,
-      uuid
+      extensionIdentifier
     );
     context.subscriptions.push(telemetryService);
 
@@ -69,6 +68,9 @@ async function telemetry(context: vscode.ExtensionContext) {
       };
       telemetryService.sendEvent({ ...event });
     }
+    // get uuid used by vscode-commons
+    console.log(`alice: UUID is -> ${vscodeCommonsAPI.getRedHatUUID()}`);
+
     // vscodeCommonsAPI.viewMessage("Hello vscode-commons, from alice");
   }
 }
