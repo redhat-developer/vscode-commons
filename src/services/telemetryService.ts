@@ -82,7 +82,7 @@ export namespace TelemetryService {
       .get<boolean>('enabled', false);
   }
 
-  export function openTelemetryOptInDialogIfNeeded(
+  export async function openTelemetryOptInDialogIfNeeded(
     context: vscode.ExtensionContext
   ) {
     const optInRequested: boolean | undefined = context.globalState.get(
@@ -96,17 +96,20 @@ export namespace TelemetryService {
                               Read our [privacy statement](command:${command}?"${privacyUrl}") 
                               and learn how to [opt out](command:${command}?"${optOutUrl}").`;
 
-      const selection = await vscode.window
-        .showInformationMessage(message, 'Accept', 'Deny');
-        if (!selection) {
-            //close was chosen. Ask next time.
-            return;
-          }
+      const selection = await vscode.window.showInformationMessage(
+        message,
+        'Accept',
+        'Deny'
+      );
+      if (!selection) {
+        //close was chosen. Ask next time.
+        return;
+      }
 
-          context.globalState.update(OPT_IN_STATUS, true);
+      context.globalState.update(OPT_IN_STATUS, true);
 
-          let optIn: boolean = selection === 'Accept';
-          updateTelemetryEnabledConfig(optIn);
+      let optIn: boolean = selection === 'Accept';
+      updateTelemetryEnabledConfig(optIn);
     }
   }
 
