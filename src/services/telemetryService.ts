@@ -41,7 +41,7 @@ export namespace TelemetryService {
         clientExtensionName
       )?.packageJSON;
       const clientSegmentKey = clientPackageJson['segmentWriteKey'];
-      Logger.log(`client Segment-Key : ${clientSegmentKey}`);
+      Logger.log(`client segmentWriteKey : ${clientSegmentKey}`);
       return clientSegmentKey;
     } catch (error) {
       Logger.log('Unable to get Client Segment-Key');

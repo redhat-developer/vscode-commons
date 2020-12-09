@@ -4,7 +4,7 @@ const doLog: boolean = true;
 export namespace Logger {
   export function log(s: number | string | boolean | undefined): void {
     if (doLog) {
-      console.log(s);
+      console.log('vscode-commons: ' + s);
     }
   }
 }

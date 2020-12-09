@@ -34,7 +34,7 @@ function getDefaultSegmentWriteKey(): string | undefined {
     let extensionPackage = require('../../package.json');
     if (extensionPackage) {
       Logger.log(
-        `Found package.json. segmentWriteKey is: ${extensionPackage.segmentWriteKey}`
+        `default segmentWriteKey is: ${extensionPackage.segmentWriteKey}`
       );
       return extensionPackage.segmentWriteKey;
     }
