@@ -2,11 +2,11 @@ import * as vscode from 'vscode';
 import Analytics from 'analytics-node';
 import { TelemetryEvent } from './interfaces/telemetryEvent';
 import { TelemetryEventQueue } from './utils/telemetryEventQueue';
+import { UUID } from './utils/uuid';
 
 export namespace Reporter {
   let analytics: Analytics;
   let extensionName: string;
-  let clientUUID: string;
 
   export function report(event: TelemetryEvent) {
     if (analyticsExists()) {
@@ -19,30 +19,26 @@ export namespace Reporter {
       switch (event.type) {
         case 'identify':
           getAnalytics()?.identify({
-            anonymousId: clientUUID || getRedHatUUID(),
+            anonymousId: getRedHatUUID(),
             traits: payload,
           });
           break;
         case 'track':
           getAnalytics()?.track({
-            anonymousId: clientUUID || getRedHatUUID(),
+            anonymousId: getRedHatUUID(),
             event: event.name || 'track.event',
             properties: event.properties || event.measures,
           });
           break;
         case 'page':
           getAnalytics()?.page({
-            anonymousId: clientUUID || getRedHatUUID(),
+            anonymousId: getRedHatUUID(),
           });
           break;
         default:
           break;
       }
     }
-  }
-
-  function getRedHatUUID() {
-    return vscode.env.machineId || 'vscode.developer';
   }
 
   export function reportQueue(queue: TelemetryEvent[] | undefined) {
@@ -54,13 +50,13 @@ export namespace Reporter {
     }
   }
 
+  function getRedHatUUID() {
+    return UUID.getRedHatUUID();
+  }
+
   export function setClientExtensionName(extensionName: string) {
     extensionName = extensionName;
   }
-  export function setClientUUID(clientUUID: string) {
-    clientUUID = clientUUID;
-  }
-
   export function setAnalytics(analyticsObject: Analytics) {
     analytics = analyticsObject;
   }

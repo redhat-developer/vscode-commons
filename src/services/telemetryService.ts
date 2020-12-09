@@ -21,11 +21,9 @@ export namespace TelemetryService {
     fallback to default segment key if no key provided via API
   */
   export function subscribeTelemetryService(
-    clientExtensionName: string,
-    clientUUID: string
+    clientExtensionName: string
   ): boolean {
     Reporter.setClientExtensionName(clientExtensionName);
-    Reporter.setClientUUID(clientUUID);
     const CLIENT_SEGMENT_KEY: string | undefined = getClientSegmentKey(
       clientExtensionName
     );

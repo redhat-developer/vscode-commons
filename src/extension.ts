@@ -2,6 +2,7 @@ import * as vscode from 'vscode';
 import { Logger } from './utils/logger';
 import { TelemetryEventQueue } from './utils/telemetryEventQueue';
 import { TelemetryService } from './services/telemetryService';
+import { UUID } from './utils/uuid';
 
 // this method is called when your extension is activated
 export function activate(context: vscode.ExtensionContext) {
@@ -65,13 +66,19 @@ export function activate(context: vscode.ExtensionContext) {
   // export to other extensions
   return Promise.resolve({
     getTelemetryService,
+    getRedHatUUID,
     viewMessage,
   });
 }
 
-function getTelemetryService(clientExtensionName: string, clientUUID: string) {
-  TelemetryService.subscribeTelemetryService(clientExtensionName, clientUUID);
+function getTelemetryService(clientExtensionName: string) {
+  TelemetryService.subscribeTelemetryService(clientExtensionName);
   return TelemetryService;
+}
+
+/* returns uuid used by vscode-commons */
+function getRedHatUUID() {
+  return UUID.getRedHatUUID();
 }
 
 /* Basic test api MUST BE REMOVED LATER */
