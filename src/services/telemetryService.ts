@@ -96,10 +96,9 @@ export namespace TelemetryService {
                               Read our [privacy statement](command:${command}?"${privacyUrl}") 
                               and learn how to [opt out](command:${command}?"${optOutUrl}").`;
 
-      vscode.window
-        .showInformationMessage(message, 'Accept', 'Deny')
-        .then((selection) => {
-          if (!selection) {
+      const selection = await vscode.window
+        .showInformationMessage(message, 'Accept', 'Deny');
+        if (!selection) {
             //close was chosen. Ask next time.
             return;
           }
@@ -108,7 +107,6 @@ export namespace TelemetryService {
 
           let optIn: boolean = selection === 'Accept';
           updateTelemetryEnabledConfig(optIn);
-        });
     }
   }
 
