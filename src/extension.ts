@@ -50,8 +50,11 @@ export function activate(context: vscode.ExtensionContext) {
     vscode.commands.registerCommand(
       'vscodeCommons.clearStateAndSettings',
       () => {
-        context.globalState.update('OPT_IN_STATUS', undefined);
-        vscode.workspace
+        context.globalState.update(
+          'redhat.telemetry.optInRequested',
+          undefined
+        );
+        return vscode.workspace
           .getConfiguration('redhat.telemetry')
           .update('enabled', undefined, true);
       }

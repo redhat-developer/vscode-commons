@@ -8,8 +8,8 @@ import { TelemetryEventQueue } from '../utils/telemetryEventQueue';
 import { privacyUrl, optOutUrl } from '../utils/constants';
 
 /* 
-  OPT_IN_STATUS == "true" if user Agreed
-  false when denied for telemetry data collection     
+  OPT_IN_STATUS === "true" if user responded on the notification pop-up
+  and undefined if the user has not responded or closed the notification pop-up    
 */
 const OPT_IN_STATUS = 'redhat.telemetry.optInRequested';
 
