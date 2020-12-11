@@ -38,10 +38,10 @@ function getDefaultSegmentWriteKey(): string | undefined {
       );
       return extensionPackage.segmentWriteKey;
     }
-    Logger.log(`Could not find vscode-commons/package.json`);
+    Logger.log('Could not find vscode-commons/package.json');
     return undefined;
   } catch (error) {
-    Logger.log(`Error in getSegmentWriteKey`);
+    Logger.log('Error in getSegmentWriteKey');
     return undefined;
   }
 }
