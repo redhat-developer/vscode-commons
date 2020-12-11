@@ -1,5 +1,5 @@
 # Red Hat Commons
-Red Hat Commons provides services for common to extensions published by Red Hat.
+Red Hat Commons provides services common to extensions published by Red Hat.
 
 ## Telemetry reporting
 With your approval, extensions published by Red Hat collect anonymous usage data and send it to Red Hat servers to help improve our products and services. Read our [privacy statement](https://developers.redhat.com/article/tool-data-collection) to learn more about it.
