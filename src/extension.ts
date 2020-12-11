@@ -1,98 +1,160 @@
-import * as vscode from 'vscode';
+import {
+  window,
+  commands,
+  ExtensionContext,
+  ConfigurationChangeEvent,
+  Disposable,
+  workspace,
+  Uri,
+} from 'vscode';
+import { Logger } from './utils/logger';
+import { TelemetryService } from './services/telemetryService';
+import { UUID } from './utils/uuid';
+import {
+  OPT_IN_STATUS_KEY,
+  PRIVACY_STATEMENT_URL,
+  OPT_OUT_INSTRUCTIONS_URL,
+  CONFIG_KEY,
+} from './utils/constants';
+import { Settings } from './services/settings';
 
-import { TelemetryEvent } from './TelemetryEvent';
-import { TelemetryEventQueue } from './TelemetryEventQueue';
-import { Reporter } from './Reporter';
-import { Logger } from './Logger';
+const telemetryServices = new Map<string, TelemetryService>();
 
-const OPTIN_REQUESTED_KEY = 'redhat.telemetry.optInRequested';
+// this method is called when your extension is activated
+export function activate(context: ExtensionContext) {
+  Logger.log('"vscode-commons" is now active!');
 
-export function activate(context: vscode.ExtensionContext) {
-  Reporter.initialize(context);
-
-  if (!getTelemetryEnabledConfig()) {
-    Logger.log('redhat.telemetry.enabled is false');
-    TelemetryEventQueue.initialize();
-  } else {
-    Logger.log('redhat.telemetry.enabled is true');
-  }
-
-  openTelemetryOptInDialogIfNeeded(context);
-
+  context.subscriptions.push(
+    commands.registerCommand('vscodeCommons.openWebPage', openWebPage)
+  );
+  /* 
+  listener for configuration change
+  */
   context.subscriptions.push(onDidChangeTelemetryEnabled());
 
-  // This command exists only for testing purposes. Should delete later.
-  context.subscriptions.push(vscode.commands.registerCommand('vscodeCommons.clearStateAndSettings', () => {
-    context.globalState.update('optInRequested', undefined);
-    vscode.workspace.getConfiguration('redhat.telemetry').update('enabled', undefined, true);
-  }));
+  // MUST BE REMOVED BEFORE RELEASE
+  registerTestCommands(context);
 
-  context.subscriptions.push(vscode.commands.registerCommand('vscodeCommons.openWebPage', openWebPage));
-
-  if (Reporter.isConnected()) {
-    // export to other extensions
-    return Promise.resolve({
-      reportIfOptIn
-    });
-  }
-}
-
-function reportIfOptIn(e: TelemetryEvent) {
-
-  // Logger.log('Event received:');
-  // Logger.log(JSON.stringify(e));
-
-  if (getTelemetryEnabledConfig()) {
-    Reporter.report(e);
-  } else {
-    TelemetryEventQueue.addEvent(e);
-  }
-}
-
-function openTelemetryOptInDialogIfNeeded(context: vscode.ExtensionContext) {
-  const optInRequested: boolean | undefined = context.globalState.get(OPTIN_REQUESTED_KEY);
-  if (!optInRequested) {
-    const privacyUrl: string = 'https://github.com/redhat-developer/vscode-commons/wiki/Usage-reporting';
-    const command: string = 'vscodeCommons.openWebPage';
-    const message: string = `Red Hat would like to collect some usage data from its extensions. [Read our privacy statement](command:${command}?"${privacyUrl}").`;
-
-    vscode.window.showInformationMessage(message, 'Accept', 'Deny').then((selection) => {
-      if (!selection) {
-        //close was chosen. Ask next time.
-        return;
-      }
-
-      context.globalState.update(OPTIN_REQUESTED_KEY, true);
-
-      let optIn: boolean = selection === 'Accept';
-      updateTelemetryEnabledConfig(optIn);
-    });
-  }
-}
-
-function openWebPage(url: string) {
-  vscode.commands.executeCommand('vscode.open', vscode.Uri.parse(url));
-}
-
-function getTelemetryEnabledConfig(): boolean {
-  return vscode.workspace.getConfiguration('redhat.telemetry').get<boolean>('enabled', false);
-}
-
-function updateTelemetryEnabledConfig(value: boolean): Thenable<void> {
-  return vscode.workspace.getConfiguration('redhat.telemetry').update('enabled', value, true);
-}
-
-function onDidChangeTelemetryEnabled(): vscode.Disposable {
-  return vscode.workspace.onDidChangeConfiguration((e: vscode.ConfigurationChangeEvent) => {
-    if (!e.affectsConfiguration('redhat.telemetry.enabled')) {
-      return;
-    }
-    if (getTelemetryEnabledConfig()) {
-      Logger.log('redhat.telemetry.enabled set to true');
-      TelemetryEventQueue.reportAllAndDestroy();
-    } else {
-      Logger.log('redhat.telemetry.enabled set to false');
-      TelemetryEventQueue.initialize();
-    }
+  openTelemetryOptInDialogIfNeeded(context);
+  /* 
+  These are the APIs which  are exposed by this extension
+  These APIs can be used in by other extensions as exports
+  Please view INSTRUCTIONS.md for more details
+  */
+  // export to other extensions
+  return Promise.resolve({
+    getTelemetryService,
+    getRedHatUUID,
+    // MUST BE REMOVED BEFORE RELEASE
+    viewMessage,
   });
+}
+
+function getTelemetryService(clientExtensionId: string) {
+  let telemetryService = telemetryServices.get(clientExtensionId);
+  if (!telemetryService) {
+    telemetryService = TelemetryService.initialize(clientExtensionId);
+    telemetryServices.set(clientExtensionId, telemetryService);
+  }
+  return telemetryService;
+}
+
+/* returns the Red Hat anonymous uuid used by vscode-commons */
+function getRedHatUUID() {
+  return UUID.getRedHatUUID();
+}
+
+function logTelemetryStatus() {
+  if (Settings.isTelemetryEnabled()) {
+    Logger.log('Red Hat Telemetry is enabled');
+  } else {
+    Logger.log('Red Hat Telemetry is disabled');
+  }
+}
+
+function onDidChangeTelemetryEnabled(): Disposable {
+  return workspace.onDidChangeConfiguration(
+    //as soon as user changed the redhat.telemetry setting, we consider
+    //opt-in (or out) has been set, so whichever the choice is, we flush the queue
+    (e: ConfigurationChangeEvent) => {
+      logTelemetryStatus();
+      telemetryServices.forEach(
+        (telemetryService: TelemetryService, k: string) => {
+          telemetryService.flushQueue();
+        }
+      );
+    }
+  );
+}
+
+export function openTelemetryOptInDialogIfNeeded(context: ExtensionContext) {
+  logTelemetryStatus();
+
+  const optInRequested: boolean | undefined = context.globalState.get(
+    OPT_IN_STATUS_KEY
+  );
+  Logger.log(`optInRequested is: ${optInRequested}`);
+
+  if (!optInRequested) {
+    const command: string = 'vscodeCommons.openWebPage';
+    const message: string = `Help Red Hat improve its extensions by allowing them to collect usage data. 
+                            Read our [privacy statement](command:${command}?"${PRIVACY_STATEMENT_URL}") 
+                            and learn how to [opt out](command:${command}?"${OPT_OUT_INSTRUCTIONS_URL}").`;
+
+    window
+      .showInformationMessage(message, 'Accept', 'Deny')
+      .then((selection) => {
+        if (!selection) {
+          //close was chosen. Ask next time.
+          return;
+        }
+
+        context.globalState.update(OPT_IN_STATUS_KEY, true);
+
+        let optIn: boolean = selection === 'Accept';
+        Settings.updateTelemetryEnabledConfig(optIn);
+      });
+  }
+}
+
+/*
+  open vscode-commons pages. Used in opt in notification(openTelemetryOptInDialogIfNeeded)
+*/
+export function openWebPage(url: string) {
+  commands.executeCommand('vscode.open', Uri.parse(url));
+}
+
+// this method is called when your extension is deactivated
+export function deactivate() {
+  telemetryServices.forEach((telemetryService: TelemetryService, k: string) => {
+    telemetryService.dispose();
+  });
+}
+
+// THOSE FUNCTIONS MUST BE REMOVED BEFORE RELEASE
+function registerTestCommands(context: ExtensionContext) {
+  /* 
+  test command to activate and  view telemetry status of 
+  extension through command pallet can be removed later 
+  */
+  context.subscriptions.push(
+    commands.registerCommand('vscodeCommons.showTelemetryStatus', () => {
+      window.showInformationMessage(
+        `Red Hat Telemetry Enabled: ${Settings.isTelemetryEnabled()}`
+      );
+    })
+  );
+
+  context.subscriptions.push(
+    commands.registerCommand('vscodeCommons.clearStateAndSettings', () => {
+      context.globalState.update(OPT_IN_STATUS_KEY, undefined);
+      return workspace
+        .getConfiguration(CONFIG_KEY)
+        .update('enabled', undefined, true);
+    })
+  );
+}
+
+function viewMessage(msg: string) {
+  window.showInformationMessage(`Msg Received in vscode-commons:  ${msg}`);
 }
