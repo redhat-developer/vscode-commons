@@ -146,6 +146,9 @@ function registerTestCommands(context: ExtensionContext) {
       window.showInformationMessage(
         `Red Hat Telemetry Enabled: ${Settings.isTelemetryEnabled()}`
       );
+      window.showInformationMessage(
+        `Red Hat anonymous Id : ${getRedHatUUID()}`
+      );
     })
   );
 

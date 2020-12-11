@@ -19,7 +19,7 @@ export namespace UUID {
       if (fs.existsSync(redhatUUIDFilePath)) {
         const contents = fs.readFileSync(redhatUUIDFilePath, {encoding: 'utf8'});
         if (contents) {
-          REDHAT_ANONYMOUS_UUID = contents;
+          REDHAT_ANONYMOUS_UUID = contents.trim();
         }
       }
       if (REDHAT_ANONYMOUS_UUID) {
