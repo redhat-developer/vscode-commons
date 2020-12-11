@@ -104,8 +104,6 @@ export function openTelemetryOptInDialogIfNeeded(context: ExtensionContext) {
     window
       .showInformationMessage(message, 'Accept', 'Deny')
       .then((selection) => {
-        console.log(selection);
-
         if (!selection) {
           //close was chosen. Ask next time.
           return;

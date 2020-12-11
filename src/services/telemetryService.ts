@@ -24,8 +24,8 @@ export class TelemetryService {
     const analytics = SegmentInitializer.initialize(segmentKey);
     const reporter = new Reporter(clientExtensionId, analytics);
     const queue = Settings.isTelemetryConfigured()
-      ? new TelemetryEventQueue()
-      : undefined;
+      ? undefined
+      : new TelemetryEventQueue();
     return new TelemetryService(reporter, queue);
   }
 
