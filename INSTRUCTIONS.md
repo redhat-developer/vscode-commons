@@ -49,16 +49,13 @@ async function telemetry(context: vscode.ExtensionContext) {
 
   if (vscodeCommonsIsAlive) {
     const extensionIdentifier = "redhat.alice";
-    const uuid = "redhat@123";
     const vscodeCommonsAPI = vscodeCommons?.exports;
 
     /*
     A "MUST HAVE" CALL
     set segment key in package.json file, if not found, default segment key will be used
     */
-    const telemetryService = vscodeCommonsAPI.getTelemetryService(
-      extensionIdentifier
-    );
+    const telemetryService = vscodeCommonsAPI.getTelemetryService(extensionIdentifier);
     context.subscriptions.push(telemetryService);
 
     if (telemetryService) {
