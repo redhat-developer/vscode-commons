@@ -14,7 +14,7 @@ export namespace UUID {
 
     const homedir = os.homedir();
     const redhatDir = path.join(homedir, '.redhat');
-    const redhatUUIDFilePath = path.join(redhatDir, 'anonymousUUID');
+    const redhatUUIDFilePath = path.join(redhatDir, 'anonymousId');
     try {
       if (fs.existsSync(redhatUUIDFilePath)) {
         const contents = fs.readFileSync(redhatUUIDFilePath, {encoding: 'utf8'});
