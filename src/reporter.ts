@@ -3,10 +3,9 @@ import { TelemetryEvent } from './interfaces/telemetryEvent';
 import { UUID } from './utils/uuid';
 
 export class Reporter {
-  
   private analytics: Analytics | undefined;
   private clientExtensionId: string;
-  
+
   constructor(clientExtensionId: string, analytics: Analytics | undefined) {
     this.clientExtensionId = clientExtensionId;
     this.analytics = analytics;
@@ -45,7 +44,7 @@ export class Reporter {
     }
   }
 
-  private getRedHatUUID():string {
+  private getRedHatUUID(): string {
     return UUID.getRedHatUUID();
   }
 }

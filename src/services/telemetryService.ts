@@ -2,12 +2,11 @@ import * as vscode from 'vscode';
 import { TelemetryEvent } from '../interfaces/telemetryEvent';
 import { Reporter } from '../reporter';
 import { Logger } from '../utils/logger';
-import { Settings } from './Settings';
+import { Settings } from './settings';
 import { SegmentInitializer } from '../utils/segmentInitializer';
 import { TelemetryEventQueue } from '../utils/telemetryEventQueue';
 
 export class TelemetryService {
-
   private reporter: Reporter;
   private queue: TelemetryEventQueue | undefined;
 
@@ -18,18 +17,25 @@ export class TelemetryService {
 
   public static initialize(clientExtensionId: string): TelemetryService {
     // provides subscription to custom segment key.
-    const segmentKey: string | undefined = TelemetryService.getClientSegmentKey(clientExtensionId);
+    const segmentKey: string | undefined = TelemetryService.getClientSegmentKey(
+      clientExtensionId
+    );
     // fallback to default segment key if no key provided via API
     const analytics = SegmentInitializer.initialize(segmentKey);
     const reporter = new Reporter(clientExtensionId, analytics);
-    const queue = Settings.isTelemetryConfigured() ? new TelemetryEventQueue() : undefined;
+    const queue = Settings.isTelemetryConfigured()
+      ? new TelemetryEventQueue()
+      : undefined;
     return new TelemetryService(reporter, queue);
   }
 
-
-  public static getClientSegmentKey(clientExtensionName: string): string | undefined {
+  public static getClientSegmentKey(
+    clientExtensionName: string
+  ): string | undefined {
     try {
-      const clientPackageJson = vscode.extensions.getExtension(clientExtensionName)?.packageJSON;
+      const clientPackageJson = vscode.extensions.getExtension(
+        clientExtensionName
+      )?.packageJSON;
       const clientSegmentKey = clientPackageJson['segmentWriteKey'];
       Logger.log(`client segmentWriteKey : ${clientSegmentKey}`);
       return clientSegmentKey;

@@ -1,9 +1,22 @@
-import {window, commands, ExtensionContext, ConfigurationChangeEvent, Disposable, workspace, Uri} from 'vscode';
+import {
+  window,
+  commands,
+  ExtensionContext,
+  ConfigurationChangeEvent,
+  Disposable,
+  workspace,
+  Uri,
+} from 'vscode';
 import { Logger } from './utils/logger';
 import { TelemetryService } from './services/telemetryService';
 import { UUID } from './utils/uuid';
-import { OPT_IN_STATUS_KEY, PRIVACY_STATEMENT_URL, OPT_OUT_INSTRUCTIONS_URL, CONFIG_KEY} from './utils/constants';
-import {Settings} from './services/Settings';
+import {
+  OPT_IN_STATUS_KEY,
+  PRIVACY_STATEMENT_URL,
+  OPT_OUT_INSTRUCTIONS_URL,
+  CONFIG_KEY,
+} from './utils/constants';
+import { Settings } from './services/settings';
 
 const telemetryServices = new Map<string, TelemetryService>();
 
@@ -11,7 +24,9 @@ const telemetryServices = new Map<string, TelemetryService>();
 export function activate(context: ExtensionContext) {
   Logger.log('"vscode-commons" is now active!');
 
-  context.subscriptions.push(commands.registerCommand('vscodeCommons.openWebPage', openWebPage));
+  context.subscriptions.push(
+    commands.registerCommand('vscodeCommons.openWebPage', openWebPage)
+  );
   /* 
   listener for configuration change
   */
@@ -49,7 +64,6 @@ function getRedHatUUID() {
   return UUID.getRedHatUUID();
 }
 
-
 function logTelemetryStatus() {
   if (Settings.isTelemetryEnabled()) {
     Logger.log('Red Hat Telemetry is enabled');
@@ -60,22 +74,25 @@ function logTelemetryStatus() {
 
 function onDidChangeTelemetryEnabled(): Disposable {
   return workspace.onDidChangeConfiguration(
-    //as soon as user changed the redhat.telemetry setting, we consider 
+    //as soon as user changed the redhat.telemetry setting, we consider
     //optin (or out) has been set, so whichever the choice is, we flush the queue
     (e: ConfigurationChangeEvent) => {
       logTelemetryStatus();
-      telemetryServices.forEach((telemetryService: TelemetryService, k: string) => {
-        telemetryService.flushQueue();
-      });
+      telemetryServices.forEach(
+        (telemetryService: TelemetryService, k: string) => {
+          telemetryService.flushQueue();
+        }
+      );
     }
   );
 }
 
-
 export function openTelemetryOptInDialogIfNeeded(context: ExtensionContext) {
   logTelemetryStatus();
 
-  const optInRequested: boolean | undefined = context.globalState.get(OPT_IN_STATUS_KEY);
+  const optInRequested: boolean | undefined = context.globalState.get(
+    OPT_IN_STATUS_KEY
+  );
   Logger.log(`optInRequested is: ${optInRequested}`);
 
   if (!optInRequested) {
@@ -102,14 +119,12 @@ export function openTelemetryOptInDialogIfNeeded(context: ExtensionContext) {
   }
 }
 
-
 /*
   open vscode-commons pages. Used in opt in notification(openTelemetryOptInDialogIfNeeded)
 */
 export function openWebPage(url: string) {
   commands.executeCommand('vscode.open', Uri.parse(url));
 }
-
 
 // this method is called when your extension is deactivated
 export function deactivate() {
@@ -133,19 +148,15 @@ function registerTestCommands(context: ExtensionContext) {
   );
 
   context.subscriptions.push(
-    commands.registerCommand(
-      'vscodeCommons.clearStateAndSettings', () => {
-        context.globalState.update(OPT_IN_STATUS_KEY, undefined);
-        return workspace
-          .getConfiguration(CONFIG_KEY)
-          .update('enabled', undefined, true);
-      }
-    )
+    commands.registerCommand('vscodeCommons.clearStateAndSettings', () => {
+      context.globalState.update(OPT_IN_STATUS_KEY, undefined);
+      return workspace
+        .getConfiguration(CONFIG_KEY)
+        .update('enabled', undefined, true);
+    })
   );
 }
 
 function viewMessage(msg: string) {
-  window.showInformationMessage(
-    `Msg Received in vscode-commons:  ${msg}`
-  );
+  window.showInformationMessage(`Msg Received in vscode-commons:  ${msg}`);
 }

@@ -3,7 +3,6 @@ import { TelemetryEvent } from '../interfaces/telemetryEvent';
 const MAX_QUEUE_SIZE = 35;
 
 export class TelemetryEventQueue {
-
   events: TelemetryEvent[] | undefined;
 
   constructor() {

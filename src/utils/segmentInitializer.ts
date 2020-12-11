@@ -20,7 +20,9 @@ export namespace SegmentInitializer {
       });
       return analytics;
     } else {
-      Logger.log('Missing segmentWriteKey from package.json OR package.json in vscode-commons');
+      Logger.log(
+        'Missing segmentWriteKey from package.json OR package.json in vscode-commons'
+      );
       return undefined;
     }
   }
@@ -31,7 +33,9 @@ function getDefaultSegmentWriteKey(): string | undefined {
     // tslint:disable-next-line: no-require-imports
     let extensionPackage = require('../../package.json');
     if (extensionPackage) {
-      Logger.log(`default segmentWriteKey is: ${extensionPackage.segmentWriteKey}`);
+      Logger.log(
+        `default segmentWriteKey is: ${extensionPackage.segmentWriteKey}`
+      );
       return extensionPackage.segmentWriteKey;
     }
     Logger.log(`Could not find vscode-commons/package.json`);
