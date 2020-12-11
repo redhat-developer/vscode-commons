@@ -50,7 +50,6 @@ npm-debug.log
 /dist/**
 /.awcache
 .webpack.json
-/build
 
 # Doc #
 /doc/
