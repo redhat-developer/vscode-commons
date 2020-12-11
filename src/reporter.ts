@@ -1,4 +1,3 @@
-import * as vscode from 'vscode';
 import Analytics from 'analytics-node';
 import { TelemetryEvent } from './interfaces/telemetryEvent';
 import { TelemetryEventQueue } from './utils/telemetryEventQueue';
