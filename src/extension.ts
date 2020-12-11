@@ -39,7 +39,7 @@ export function activate(context: ExtensionContext) {
   /* 
   These are the APIs which  are exposed by this extension
   These APIs can be used in by other extensions as exports
-  Please view INTEGRATION.md for more details
+  Please view INSTRUCTIONS.md for more details
   */
   // export to other extensions
   return Promise.resolve({

@@ -7,10 +7,10 @@ export namespace Settings {
   }
 
   /* 
-        Checks the current telemetry configuration(package.json) 
-        returns "true if telemetry is enabled 
-        returns "false" if it is not-enable or undefined(default value)"
-    */
+    Checks the current telemetry configuration(package.json) 
+    returns "true if telemetry is enabled 
+    returns "false" if it is not-enable or undefined(default value)"
+  */
   export function isTelemetryEnabled(): boolean {
     return getTelemetryConfiguration().get<boolean>('enabled', false);
   }

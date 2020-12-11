@@ -66,7 +66,7 @@ async function telemetry(context: vscode.ExtensionContext) {
         type: "track",
         name: "Test Event",
       };
-      telemetryService.sendEvent({ ...event });
+      telemetryService.send({ ...event });
     }
     // get uuid used by vscode-commons
     console.log(`alice: UUID is -> ${vscodeCommonsAPI.getRedHatUUID()}`);
