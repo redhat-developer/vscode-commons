@@ -1,37 +1,42 @@
 import Analytics from 'analytics-node';
 import { TelemetryEvent } from './interfaces/telemetryEvent';
-import { TelemetryEventQueue } from './utils/telemetryEventQueue';
 import { UUID } from './utils/uuid';
 
-export namespace Reporter {
-  let analytics: Analytics;
-  let extensionName: string;
+export class Reporter {
+  
+  private analytics: Analytics | undefined;
+  private clientExtensionId: string;
+  
+  constructor(clientExtensionId: string, analytics: Analytics | undefined) {
+    this.clientExtensionId = clientExtensionId;
+    this.analytics = analytics;
+  }
 
-  export function report(event: TelemetryEvent) {
-    if (analyticsExists()) {
+  public report(event: TelemetryEvent) {
+    if (this.analytics) {
       let payload = {
-        extensionName: extensionName,
+        extensionName: this.clientExtensionId,
         name: event.name,
         properties: event.properties,
         measures: event.measures,
       };
       switch (event.type) {
         case 'identify':
-          getAnalytics()?.identify({
-            anonymousId: getRedHatUUID(),
+          this.analytics?.identify({
+            anonymousId: this.getRedHatUUID(),
             traits: payload,
           });
           break;
         case 'track':
-          getAnalytics()?.track({
-            anonymousId: getRedHatUUID(),
+          this.analytics?.track({
+            anonymousId: this.getRedHatUUID(),
             event: event.name || 'track.event',
             properties: event.properties || event.measures,
           });
           break;
         case 'page':
-          getAnalytics()?.page({
-            anonymousId: getRedHatUUID(),
+          this.analytics?.page({
+            anonymousId: this.getRedHatUUID(),
           });
           break;
         default:
@@ -40,29 +45,7 @@ export namespace Reporter {
     }
   }
 
-  export function reportQueue(queue: TelemetryEvent[] | undefined) {
-    if (queue) {
-      queue.forEach((event: TelemetryEvent) => {
-        report(event);
-      });
-      TelemetryEventQueue.dispose();
-    }
-  }
-
-  function getRedHatUUID() {
+  private getRedHatUUID():string {
     return UUID.getRedHatUUID();
-  }
-
-  export function setClientExtensionName(extensionName: string) {
-    extensionName = extensionName;
-  }
-  export function setAnalytics(analyticsObject: Analytics) {
-    analytics = analyticsObject;
-  }
-  export function getAnalytics() {
-    return analytics;
-  }
-  export function analyticsExists() {
-    return typeof analytics !== 'undefined' && analytics !== null;
   }
 }

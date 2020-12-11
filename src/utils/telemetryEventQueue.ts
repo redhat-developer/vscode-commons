@@ -1,25 +1,26 @@
 import { TelemetryEvent } from '../interfaces/telemetryEvent';
 
-let queue: TelemetryEvent[] | undefined;
-export namespace TelemetryEventQueue {
-  const MAX_QUEUE_SIZE = 35;
-  export function initialize() {
-    queue = [];
+const MAX_QUEUE_SIZE = 35;
+
+export class TelemetryEventQueue {
+
+  events: TelemetryEvent[] | undefined;
+
+  constructor() {
+    this.events = [];
   }
+
   /*
     shift() should work fine until we choose to have high MAX_QUEUE_SIZE
    */
-  export function addEvent(e: TelemetryEvent) {
-    if (queue?.length === MAX_QUEUE_SIZE) {
-      queue?.shift();
+  public addEvent(e: TelemetryEvent) {
+    if (this.events?.length === MAX_QUEUE_SIZE) {
+      this.events.shift();
     }
-    queue?.push(e);
+    this.events?.push(e);
   }
 
-  export function dispose() {
-    queue = undefined;
-  }
-  export function getQueue() {
-    return queue;
+  public emptyQueue() {
+    this.events = undefined;
   }
 }
