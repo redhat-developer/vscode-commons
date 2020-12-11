@@ -75,7 +75,7 @@ function logTelemetryStatus() {
 function onDidChangeTelemetryEnabled(): Disposable {
   return workspace.onDidChangeConfiguration(
     //as soon as user changed the redhat.telemetry setting, we consider
-    //optin (or out) has been set, so whichever the choice is, we flush the queue
+    //opt-in (or out) has been set, so whichever the choice is, we flush the queue
     (e: ConfigurationChangeEvent) => {
       logTelemetryStatus();
       telemetryServices.forEach(
