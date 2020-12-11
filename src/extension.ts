@@ -89,29 +89,33 @@ function onDidChangeTelemetryEnabled(): Disposable {
 
 export function openTelemetryOptInDialogIfNeeded(context: ExtensionContext) {
   logTelemetryStatus();
-
   const optInRequested: boolean | undefined = context.globalState.get(
     OPT_IN_STATUS_KEY
-  );
-  Logger.log(`optInRequested is: ${optInRequested}`);
-
-  if (!optInRequested) {
-    const command: string = 'vscodeCommons.openWebPage';
-    const message: string = `Help Red Hat improve its extensions by allowing them to collect usage data. 
-                            Read our [privacy statement](command:${command}?"${PRIVACY_STATEMENT_URL}") 
-                            and learn how to [opt out](command:${command}?"${OPT_OUT_INSTRUCTIONS_URL}").`;
-
-    window
+    );
+    Logger.log(`optInRequested is: ${optInRequested}`);
+    
+    if (!optInRequested) {
+      const command: string = 'vscodeCommons.openWebPage';
+      const message: string = `Help Red Hat improve its extensions by allowing them to collect usage data. 
+      Read our [privacy statement](command:${command}?"${PRIVACY_STATEMENT_URL}") 
+      and learn how to [opt out](command:${command}?"${OPT_OUT_INSTRUCTIONS_URL}").`;
+      
+      window
       .showInformationMessage(message, 'Accept', 'Deny')
       .then((selection) => {
         if (!selection) {
           //close was chosen. Ask next time.
           return;
         }
-
+        
         context.globalState.update(OPT_IN_STATUS_KEY, true);
-
+        
         let optIn: boolean = selection === 'Accept';
+        if (optIn) {
+          //increase the chances of writing the anonymousUUID on disk 
+          // before any other extension 
+          getRedHatUUID();
+        }
         Settings.updateTelemetryEnabledConfig(optIn);
       });
   }
