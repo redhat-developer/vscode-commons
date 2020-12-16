@@ -11,7 +11,7 @@ node('rhel8'){
 
 	stage 'Checkout vscode-commons code'
 	deleteDir()
-	git branch: 'release', url: 'https://github.com/redhat-developer/vscode-commons.git'
+	git url: 'https://github.com/${params.FORK}/vscode-commons.git', branch: params.BRANCH
 
 	stage 'install vscode-commons build requirements'
 	installBuildRequirements()
