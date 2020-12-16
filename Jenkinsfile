@@ -7,7 +7,7 @@ def installBuildRequirements(){
     sh "npm install -g vsce"
 }
 
-def canonicalRepo() {
+def isCanonicalRepo() {
     "master".equals(params.BRANCH) && "redhat-developer".equals(params.FORK)
 }
 
