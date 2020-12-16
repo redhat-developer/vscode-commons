@@ -22,8 +22,7 @@ node('rhel8'){
 
     stage 'Build vscode-commons'
     sh "npm install"
-    sh "npm run build"
-    sh "npm run check-dependencies"
+    sh "npm run vscode:prepublish"
 
     stage 'Test vscode-commons for staging'
     wrap([$class: 'Xvnc']) {
