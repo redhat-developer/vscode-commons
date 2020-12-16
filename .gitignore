@@ -76,6 +76,7 @@ npm-debug.log*
 .vs
 *.msi
 *.nupkg
+.vscode-test/
 test/fixtures/**/.fbkpm
 /tmp/
 /__tests__/fixtures/**/_*
