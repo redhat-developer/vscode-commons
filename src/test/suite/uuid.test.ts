@@ -14,15 +14,15 @@ suite('UUID Test Suite', () => {
   test('Generate anonymousId file', () => {
     const workDir = path.join(os.tmpdir(), '.redhat');
     if (fs.existsSync(workDir)) {
-      fs.rmdirSync(workDir);
+      fs.rmdirSync(workDir, {recursive: true});
     }
     fs.mkdirpSync(workDir);
-    UUID.generateUUID(workDir);
+    UUID.getRedHatUUID(workDir);
 
     const anonymousIdFile = path.join(workDir, 'anonymousId');
     assert.ok(fs.existsSync(anonymousIdFile));
     const contents = fs.readFileSync(anonymousIdFile, {encoding: 'utf8'});
-    console.log(contents);
+    console.log(`Read Red Hat UUID as ${contents}`);
   });
 
 });
