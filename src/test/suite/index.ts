@@ -6,6 +6,7 @@ export function run(): Promise<void> {
   // Create the mocha test
   const mocha = new Mocha({
     ui: 'tdd',
+    reporter: 'mocha-jenkins-reporter',
     color: true,
   });
 

@@ -25,8 +25,11 @@ node('rhel8'){
     sh "npm run vscode:prepublish"
 
     stage 'Test vscode-commons for staging'
-    wrap([$class: 'Xvnc']) {
-        sh "npm test --silent"
+    withEnv(['JUNIT_REPORT_PATH=report.xml']) {
+        wrap([$class: 'Xvnc']) {
+            sh "npm test --silent"
+            junit 'report.xml'
+        }
     }
 
     stage "Package vscode-commons"
