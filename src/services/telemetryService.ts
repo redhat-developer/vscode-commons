@@ -5,6 +5,26 @@ import { Logger } from '../utils/logger';
 import { Settings } from './settings';
 import { SegmentInitializer } from '../utils/segmentInitializer';
 import { TelemetryEventQueue } from '../utils/telemetryEventQueue';
+import * as os from 'os';
+import osLocale from 'os-locale';
+
+const PLATFORM = getPlatform();
+const TZ = Intl.DateTimeFormat().resolvedOptions().timeZone;
+const LOCALE = osLocale.sync().replace('_', '-');
+const tuple = LOCALE.split('-');
+const COUNTRY = (tuple.length === 2)?tuple[1]:'??';
+
+function getPlatform(): string {
+  console.log(os.type());
+  const platform:string  = os.platform();
+  if (platform.startsWith('win')) {
+    return 'Windows';
+  }
+  if (platform.startsWith('darwin')) {
+    return 'Mac';
+  }
+  return 'Linux';
+}
 
 export class TelemetryService {
   private reporter: Reporter;
@@ -59,6 +79,13 @@ export class TelemetryService {
       // Still waiting for opt-in?, then queue events
       this.queue?.addEvent(event);
     }
+  }
+
+  public sendStartupEvent() {
+    this.send({ name:'Startup'});
+  }
+  public sendShutdownEvent() {
+    this.send({ name:'Shutdown'});
   }
 
   private sendEvent(event: TelemetryEvent) {

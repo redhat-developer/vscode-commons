@@ -16,3 +16,4 @@ Jenkinsfile
 build/**
 .github/**
 images/**
+target/**

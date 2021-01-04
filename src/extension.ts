@@ -19,7 +19,6 @@ import {
 import { Settings } from './services/settings';
 
 const telemetryServices = new Map<string, TelemetryService>();
-
 // this method is called when your extension is activated
 export function activate(context: ExtensionContext) {
   Logger.log('"vscode-commons" is now active!');
@@ -36,6 +35,11 @@ export function activate(context: ExtensionContext) {
   registerTestCommands(context);
 
   openTelemetryOptInDialogIfNeeded(context);
+
+  const telemetryService = getTelemetryService('redhat.vscode-commons');
+  context.subscriptions.push(telemetryService);
+  telemetryService.sendStartupEvent();
+
   /* 
   These are the APIs which  are exposed by this extension
   These APIs can be used in by other extensions as exports
@@ -131,6 +135,7 @@ export function openWebPage(url: string) {
 // this method is called when your extension is deactivated
 export function deactivate() {
   telemetryServices.forEach((telemetryService: TelemetryService, k: string) => {
+    telemetryService.sendShutdownEvent();
     telemetryService.dispose();
   });
 }
@@ -139,10 +144,16 @@ export function deactivate() {
 function registerTestCommands(context: ExtensionContext) {
   /* 
   test command to activate and  view telemetry status of 
-  extension through command pallet can be removed later 
+  extension through command palette, can be removed later. 
   */
   context.subscriptions.push(
     commands.registerCommand('vscodeCommons.showTelemetryStatus', () => {
+      getTelemetryService('redhat.vscode-commons').send({
+        name:'test',
+        properties:{
+          payload: 'Lorem Ipsum...'
+        }
+      });
       window.showInformationMessage(
         `Red Hat Telemetry Enabled: ${Settings.isTelemetryEnabled()}`
       );

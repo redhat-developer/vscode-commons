@@ -1,5 +1,6 @@
 import Analytics from 'analytics-node';
 import { TelemetryEvent } from './interfaces/telemetryEvent';
+import { Logger } from './utils/logger';
 import { UUID } from './utils/uuid';
 
 export class Reporter {
@@ -14,29 +15,24 @@ export class Reporter {
   public report(event: TelemetryEvent) {
     if (this.analytics) {
       let payload = {
+        anonymousId: this.getRedHatUUID(),
         extensionName: this.clientExtensionId,
-        name: event.name,
+        event: event.name,
         properties: event.properties,
         measures: event.measures,
+        traits: event.traits
       };
-      switch (event.type) {
+      const type = (event.type)?event.type:'track';
+      Logger.log(`Sending ${type} event with\n${JSON.stringify(payload)}`);
+      switch (type) {
         case 'identify':
-          this.analytics?.identify({
-            anonymousId: this.getRedHatUUID(),
-            traits: payload,
-          });
+          this.analytics?.identify(payload);
           break;
         case 'track':
-          this.analytics?.track({
-            anonymousId: this.getRedHatUUID(),
-            event: event.name || 'track.event',
-            properties: event.properties || event.measures,
-          });
+          this.analytics?.track(payload);
           break;
         case 'page':
-          this.analytics?.page({
-            anonymousId: this.getRedHatUUID(),
-          });
+          this.analytics?.page(payload);
           break;
         default:
           break;
@@ -47,4 +43,5 @@ export class Reporter {
   private getRedHatUUID(): string {
     return UUID.getRedHatUUID();
   }
+
 }
