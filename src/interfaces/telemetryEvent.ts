@@ -4,4 +4,5 @@ export interface TelemetryEvent {
   properties?: any;
   measures?: any;
   traits?:any;
+  context?:any;
 }
