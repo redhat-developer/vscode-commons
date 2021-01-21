@@ -31,7 +31,7 @@ export function enhance(event: TelemetryEvent, extensionId: string, extensionVer
     type: event.type, // type of telemetry event such as : identify, track, page, etc.
     properties: properties,
     measures: event.measures,
-    traits: event.measures,
+    traits: event.traits,
     context: context
   };
   return enhancedEvent;

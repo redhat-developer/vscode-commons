@@ -11,7 +11,7 @@ export namespace SegmentInitializer {
     let segmentWriteKey = getSegmentKey(clientPackageJson);
     if (!segmentWriteKey) {
       //Using the default key
-      if (DEFAULT_SEGMENT_KEY) {
+      if (!DEFAULT_SEGMENT_KEY) {
         const defaultPackageJson = require('../../package.json');
         DEFAULT_SEGMENT_KEY = getSegmentKey(defaultPackageJson);
       }
@@ -66,7 +66,7 @@ function getSegmentKey(packageJson: any): string | undefined {
     }
     return clientSegmentKey;
   } catch (error) {
-    Logger.log(`Unable to get '${extensionId}' ${keyKey}`);
+    Logger.log(`Unable to get '${extensionId}' ${keyKey}: ${error}`);
   }
   return undefined;
 }
