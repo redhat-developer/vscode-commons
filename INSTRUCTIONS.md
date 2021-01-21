@@ -1,27 +1,27 @@
-## Add "redhat.vscode-commons" as extension dependency in package.json file for auto download of vscode-commons
+## Add "redhat.vscode-commons" as extension dependency in package.json
 
-- Dependencies to other extensions. The identifier of an extension is always ${publisher}.${name}. For example: vscode.csharp.
+- Adding `redhat.vscode-commons` to the `extensionDependencies` section of your extension's package.json allows that dependency to be automatically downloaded and installed, when installing from the Marketplace.
 
 ```
   "extensionDependencies": ["redhat.vscode-commons"],
 ```
 
-## Add your custom segment key in package.json file
+## [Optional] Add a custom segment key in package.json file
+By default, extensions will send their data to https://app.segment.com/redhat-devtools/sources/vscode/. In development mode, the data is sent to https://app.segment.com/redhat-devtools/sources/vs_code_tests/.
 
-- This key will be used to connect and push usage data to segment
+- You can specify custom segment keys to connect and push usage data to https://segment.com/
 
 ```
     "segmentWriteKey": "your-segment-key-goes-here",
+    "segmentWriteKeyDebug": "your-segment-key-goes-here-for-dev-mode",
 ```
 
-> **NOTE** Default segment key will be used if you do not provide a custom segment key
-
-## Add the bellow code in your client extensions
+## Add the below code in your client extensions
 
 ```
 interface TelemetryEvent {
-  type?: string; // type of telemetry event such as : identify, track, page, etc.
-  name?: string;
+  name: string;
+  type?: string; // type of telemetry event such as : identify, track, page, etc. Defaults to track
   properties?: any;
   measures?: any;
 }
@@ -32,17 +32,15 @@ async function telemetry(context: vscode.ExtensionContext) {
   let vscodeCommonsIsAlive = false;
 
   if (vscodeCommons?.isActive) {
-    console.log("alice: redhat.vscode-commons is active");
     vscodeCommonsIsAlive = true;
   } else {
-    console.log("alice: redhat.vscode-commons is not active");
     await vscodeCommons?.activate().then(
       function () {
-        console.log("alice: redhat.vscode-commons activated");
+        // redhat.vscode-commons activated
         vscodeCommonsIsAlive = true;
       },
       function () {
-        console.log("alice: redhat.vscode-commons activation failed");
+        console.log("redhat.vscode-commons activation failed");
       }
     );
   }

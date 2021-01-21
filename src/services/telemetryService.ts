@@ -5,26 +5,6 @@ import { Logger } from '../utils/logger';
 import { Settings } from './settings';
 import { SegmentInitializer } from '../utils/segmentInitializer';
 import { TelemetryEventQueue } from '../utils/telemetryEventQueue';
-import * as os from 'os';
-import osLocale from 'os-locale';
-
-const PLATFORM = getPlatform();
-const TZ = Intl.DateTimeFormat().resolvedOptions().timeZone;
-const LOCALE = osLocale.sync().replace('_', '-');
-const tuple = LOCALE.split('-');
-const COUNTRY = (tuple.length === 2)?tuple[1]:'??';
-
-function getPlatform(): string {
-  console.log(os.type());
-  const platform:string  = os.platform();
-  if (platform.startsWith('win')) {
-    return 'Windows';
-  }
-  if (platform.startsWith('darwin')) {
-    return 'Mac';
-  }
-  return 'Linux';
-}
 
 export class TelemetryService {
   private reporter: Reporter;
@@ -36,33 +16,13 @@ export class TelemetryService {
   }
 
   public static initialize(clientExtensionId: string): TelemetryService {
-    // provides subscription to custom segment key.
-    const segmentKey: string | undefined = TelemetryService.getClientSegmentKey(
-      clientExtensionId
-    );
-    // fallback to default segment key if no key provided via API
-    const analytics = SegmentInitializer.initialize(segmentKey);
-    const reporter = new Reporter(clientExtensionId, analytics);
+    let clientPackageJson = vscode.extensions.getExtension(clientExtensionId)?.packageJSON;
+    const analytics = SegmentInitializer.initialize(clientPackageJson);
+    const reporter = new Reporter(clientPackageJson, analytics);
     const queue = Settings.isTelemetryConfigured()
       ? undefined
       : new TelemetryEventQueue();
     return new TelemetryService(reporter, queue);
-  }
-
-  public static getClientSegmentKey(
-    clientExtensionName: string
-  ): string | undefined {
-    try {
-      const clientPackageJson = vscode.extensions.getExtension(
-        clientExtensionName
-      )?.packageJSON;
-      const clientSegmentKey = clientPackageJson['segmentWriteKey'];
-      Logger.log(`client segmentWriteKey : ${clientSegmentKey}`);
-      return clientSegmentKey;
-    } catch (error) {
-      Logger.log(`Unable to get '${clientExtensionName}' Segment-Key`);
-    }
-    return undefined;
   }
 
   /* 
@@ -82,10 +42,10 @@ export class TelemetryService {
   }
 
   public sendStartupEvent() {
-    this.send({ name:'Startup'});
+    this.send({ name: 'startup' });
   }
   public sendShutdownEvent() {
-    this.send({ name:'Shutdown'});
+    this.send({ name: 'shutdown' });
   }
 
   private sendEvent(event: TelemetryEvent) {
@@ -109,4 +69,5 @@ export class TelemetryService {
   public dispose() {
     this.queue?.emptyQueue();
   }
+
 }

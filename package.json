@@ -5,6 +5,7 @@
   "version": "0.0.1",
   "publisher": "redhat",
   "segmentWriteKey": "MXM7iv13sVaCGqOhnQEGLZxhfy6hecYh",
+  "segmentWriteKeyDebug": "eKBn0xqKQcQJVhUOW0vdQtNQiK791OLa",
   "repository": {
     "type": "git",
     "url": "https://github.com/redhat-developer/vscode-commons/"
