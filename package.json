@@ -4,6 +4,8 @@
   "description": "Base utilities for Red Hat extensions. Notably controls Telemetry settings.",
   "version": "0.0.1",
   "publisher": "redhat",
+  "license": "Apache-2.0",
+  "bugs": "https://github.com/redhat-developer/vscode-commons/issues",
   "segmentWriteKey": "MXM7iv13sVaCGqOhnQEGLZxhfy6hecYh",
   "segmentWriteKeyDebug": "eKBn0xqKQcQJVhUOW0vdQtNQiK791OLa",
   "repository": {
