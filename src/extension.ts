@@ -8,7 +8,7 @@ import {
   Uri,
 } from 'vscode';
 import { Logger } from './utils/logger';
-import { TelemetryService } from './services/telemetryService';
+import { TelemetryService } from './interfaces/telemetryService';
 import { UUID } from './utils/uuid';
 import {
   OPT_IN_STATUS_KEY,
@@ -17,6 +17,7 @@ import {
   CONFIG_KEY,
 } from './utils/constants';
 import { Settings } from './services/settings';
+import { TelemetryServiceImpl } from './services/telemetryServiceImpl';
 
 const telemetryServices = new Map<string, TelemetryService>();
 // this method is called when your extension is activated
@@ -54,10 +55,10 @@ export function activate(context: ExtensionContext) {
   });
 }
 
-function getTelemetryService(clientExtensionId: string) {
+function getTelemetryService(clientExtensionId: string): TelemetryService {
   let telemetryService = telemetryServices.get(clientExtensionId);
   if (!telemetryService) {
-    telemetryService = TelemetryService.initialize(clientExtensionId);
+    telemetryService = TelemetryServiceImpl.initialize(clientExtensionId);
     telemetryServices.set(clientExtensionId, telemetryService);
   }
   return telemetryService;

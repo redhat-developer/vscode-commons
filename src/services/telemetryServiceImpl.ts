@@ -1,12 +1,12 @@
 import * as vscode from 'vscode';
-import { TelemetryEvent } from '../interfaces/telemetryEvent';
 import { Reporter } from '../reporter';
 import { Logger } from '../utils/logger';
 import { Settings } from './settings';
 import { SegmentInitializer } from '../utils/segmentInitializer';
 import { TelemetryEventQueue } from '../utils/telemetryEventQueue';
+import { TelemetryService, TelemetryEvent } from '../interfaces/telemetryService';
 
-export class TelemetryService {
+export class TelemetryServiceImpl implements TelemetryService {
   private reporter: Reporter;
   private queue: TelemetryEventQueue | undefined;
 
@@ -22,7 +22,7 @@ export class TelemetryService {
     const queue = Settings.isTelemetryConfigured()
       ? undefined
       : new TelemetryEventQueue();
-    return new TelemetryService(reporter, queue);
+    return new TelemetryServiceImpl(reporter, queue);
   }
 
   /* 
