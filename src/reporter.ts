@@ -1,5 +1,5 @@
 import Analytics from 'analytics-node';
-import { TelemetryEvent } from './interfaces/telemetryEvent';
+import { TelemetryEvent } from './interfaces/telemetry';
 import { enhance } from './utils/events';
 import { getExtensionId } from './utils/extensions';
 import { Logger } from './utils/logger';

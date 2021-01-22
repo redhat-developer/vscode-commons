@@ -4,7 +4,7 @@ import { Logger } from '../utils/logger';
 import { Settings } from './settings';
 import { SegmentInitializer } from '../utils/segmentInitializer';
 import { TelemetryEventQueue } from '../utils/telemetryEventQueue';
-import { TelemetryService, TelemetryEvent } from '../interfaces/telemetryService';
+import { TelemetryService, TelemetryEvent } from '../interfaces/telemetry';
 
 export class TelemetryServiceImpl implements TelemetryService {
   private reporter: Reporter;

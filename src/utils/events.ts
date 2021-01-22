@@ -1,5 +1,5 @@
 import { env, version } from 'vscode';
-import { TelemetryEvent } from '../interfaces/telemetryEvent';
+import { TelemetryEvent } from '../interfaces/telemetry';
 import { COUNTRY, LOCALE, PLATFORM, PLATFORM_VERSION, TIMEZONE } from './platform';
 
 export function enhance(event: TelemetryEvent, extensionId: string, extensionVersion: string): TelemetryEvent {

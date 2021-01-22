@@ -1,4 +1,4 @@
-import { TelemetryEvent } from '../../interfaces/telemetryEvent';
+import { TelemetryEvent } from '../../interfaces/telemetry';
 import {
   TelemetryEventQueue,
   MAX_QUEUE_SIZE,

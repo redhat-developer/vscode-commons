@@ -8,7 +8,7 @@ import {
   Uri,
 } from 'vscode';
 import { Logger } from './utils/logger';
-import { TelemetryService } from './interfaces/telemetryService';
+import { TelemetryService } from './interfaces/telemetry';
 import { UUID } from './utils/uuid';
 import {
   OPT_IN_STATUS_KEY,
