@@ -2,9 +2,8 @@ import * as assert from 'assert';
 import * as fs from 'fs-extra';
 import * as os from 'os';
 import * as path from 'path';
-import uuid, { v4, v5 } from 'uuid';
-import { UUID } from '../../utils/uuid';
-
+import { UUID } from '@redhat-developer/vscode-redhat-telemetry/lib/utils/uuid';
+//TODO Move to @redhat-developer/vscode-redhat-telemetry
 suite('UUID Test Suite', () => {
 
   test('Generate reapeatable UUIDs', () => {

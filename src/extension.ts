@@ -1,28 +1,25 @@
-import {
-  window,
-  commands,
-  ExtensionContext,
-  ConfigurationChangeEvent,
-  Disposable,
-  workspace,
-  Uri,
-} from 'vscode';
-import { Logger } from './utils/logger';
-import { TelemetryService } from './interfaces/telemetry';
-import { UUID } from './utils/uuid';
-import {
-  OPT_IN_STATUS_KEY,
-  PRIVACY_STATEMENT_URL,
-  OPT_OUT_INSTRUCTIONS_URL,
-  CONFIG_KEY,
-} from './utils/constants';
-import { Settings } from './services/settings';
-import { TelemetryServiceImpl } from './services/telemetryServiceImpl';
+import { TelemetryService, TelemetryServiceBuilder } from '@redhat-developer/vscode-redhat-telemetry';
+import { FileSystemIdManager } from '@redhat-developer/vscode-redhat-telemetry/lib/services/fileSystemIdManager';
+import { Logger } from '@redhat-developer/vscode-redhat-telemetry/lib/utils/logger';
+import { getEnvironment } from '@redhat-developer/vscode-redhat-telemetry/lib/utils/platform-node';
+import { commands, ConfigurationChangeEvent, Disposable, ExtensionContext, extensions, Uri, window, workspace } from 'vscode';
+import { VSCodeSettings } from './services/settings-vscode';
+import { CONFIG_KEY, OPT_IN_STATUS_KEY, OPT_OUT_INSTRUCTIONS_URL, PRIVACY_STATEMENT_URL } from './utils/constants';
 
 const telemetryServices = new Map<string, TelemetryService>();
+const idManager = new FileSystemIdManager();
+
+let settings: VSCodeSettings;
+let defaultSegmentWriteKey: string;
+let defaultSegmentWriteKeyDebug: string;
+
 // this method is called when your extension is activated
 export function activate(context: ExtensionContext) {
   Logger.log('"vscode-commons" is now active!');
+  const commonsPackageJson = require('../package.json');
+  settings = new VSCodeSettings();
+  defaultSegmentWriteKey = commonsPackageJson.segmentWriteKey;
+  defaultSegmentWriteKeyDebug = commonsPackageJson.segmentWriteKeyDebug;
 
   context.subscriptions.push(
     commands.registerCommand('vscodeCommons.openWebPage', openWebPage)
@@ -39,6 +36,10 @@ export function activate(context: ExtensionContext) {
 
   const telemetryService = getTelemetryService('redhat.vscode-commons');
   context.subscriptions.push(telemetryService);
+  telemetryService.send({
+    type: 'identify',
+    name: 'identify'
+  });
   telemetryService.sendStartupEvent();
 
   /* 
@@ -58,7 +59,16 @@ export function activate(context: ExtensionContext) {
 function getTelemetryService(clientExtensionId: string): TelemetryService {
   let telemetryService = telemetryServices.get(clientExtensionId);
   if (!telemetryService) {
-    telemetryService = TelemetryServiceImpl.initialize(clientExtensionId);
+    const packageJson = getPackageJson(clientExtensionId);
+    if (!packageJson) {
+      throw new Error(`Invalid extension ${clientExtensionId}`);
+    }
+    const builder = new TelemetryServiceBuilder(packageJson)
+      .setSettings(settings)
+      .setIdManager(idManager)
+      .setEnvironment(getEnvironment(clientExtensionId, packageJson.version));
+
+    telemetryService = builder.build();
     telemetryServices.set(clientExtensionId, telemetryService);
   }
   return telemetryService;
@@ -66,11 +76,11 @@ function getTelemetryService(clientExtensionId: string): TelemetryService {
 
 /* returns the Red Hat anonymous uuid used by vscode-commons */
 function getRedHatUUID() {
-  return UUID.getRedHatUUID();
+  return idManager.getRedHatUUID();
 }
 
 function logTelemetryStatus() {
-  if (Settings.isTelemetryEnabled()) {
+  if (settings.isTelemetryEnabled()) {
     Logger.log('Red Hat Telemetry is enabled');
   } else {
     Logger.log('Red Hat Telemetry is disabled');
@@ -121,7 +131,7 @@ export function openTelemetryOptInDialogIfNeeded(context: ExtensionContext) {
           // before any other extension 
           getRedHatUUID();
         }
-        Settings.updateTelemetryEnabledConfig(optIn);
+        settings.updateTelemetryEnabledConfig(optIn);
       });
   }
 }
@@ -157,7 +167,7 @@ function registerTestCommands(context: ExtensionContext) {
         }
       });
       window.showInformationMessage(
-        `Red Hat Telemetry Enabled: ${Settings.isTelemetryEnabled()}`
+        `Red Hat Telemetry Enabled: ${settings.isTelemetryEnabled()}`
       );
       window.showInformationMessage(
         `Red Hat anonymous Id : ${getRedHatUUID()}`
@@ -177,4 +187,18 @@ function registerTestCommands(context: ExtensionContext) {
 
 function viewMessage(msg: string) {
   window.showInformationMessage(`Msg Received in vscode-commons:  ${msg}`);
+}
+
+function getPackageJson(extensionId: string): any {
+  let packageJson = extensions.getExtension(extensionId)?.packageJSON;
+  if (!packageJson) {
+    return null;
+  }
+  if (!packageJson.segmentWriteKey) {
+    packageJson.segmentWriteKey = defaultSegmentWriteKey;
+  }
+  if (!packageJson.segmentWriteKeyDebug) {
+    packageJson.segmentWriteKeyDebug = defaultSegmentWriteKeyDebug;
+  }
+  return packageJson;
 }

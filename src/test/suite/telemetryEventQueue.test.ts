@@ -1,12 +1,13 @@
-import { TelemetryEvent } from '../../interfaces/telemetry';
+import { TelemetryEvent } from '@redhat-developer/vscode-redhat-telemetry';
 import {
   TelemetryEventQueue,
   MAX_QUEUE_SIZE,
-} from '../../utils/telemetryEventQueue';
+} from '@redhat-developer/vscode-redhat-telemetry/lib/utils/telemetryEventQueue';
 import * as assert from 'assert';
 
 let dummyEvent: TelemetryEvent = { name: 'test' };
 
+//TODO Move to @redhat-developer/vscode-redhat-telemetry
 suite('Event Queue Test Suite', () => {
   let queue = new TelemetryEventQueue();
   test('should generate event queue', () => {
