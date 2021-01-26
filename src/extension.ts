@@ -14,7 +14,7 @@ let defaultSegmentWriteKey: string;
 let defaultSegmentWriteKeyDebug: string;
 
 // this method is called when your extension is activated
-export function activate(context: ExtensionContext) {
+export async function activate(context: ExtensionContext) {
   Logger.log('"vscode-commons" is now active!');
   const commonsPackageJson = require('../package.json');
   settings = new VSCodeSettings();
@@ -34,7 +34,7 @@ export function activate(context: ExtensionContext) {
 
   openTelemetryOptInDialogIfNeeded(context);
 
-  const telemetryService = getTelemetryService('redhat.vscode-commons');
+  const telemetryService = await getTelemetryService('redhat.vscode-commons');
   context.subscriptions.push(telemetryService);
   telemetryService.send({
     type: 'identify',
@@ -56,7 +56,7 @@ export function activate(context: ExtensionContext) {
   });
 }
 
-function getTelemetryService(clientExtensionId: string): TelemetryService {
+async function getTelemetryService(clientExtensionId: string): Promise<TelemetryService> {
   let telemetryService = telemetryServices.get(clientExtensionId);
   if (!telemetryService) {
     const packageJson = getPackageJson(clientExtensionId);
@@ -66,7 +66,7 @@ function getTelemetryService(clientExtensionId: string): TelemetryService {
     const builder = new TelemetryServiceBuilder(packageJson)
       .setSettings(settings)
       .setIdManager(idManager)
-      .setEnvironment(getEnvironment(clientExtensionId, packageJson.version));
+      .setEnvironment(await getEnvironment(clientExtensionId, packageJson.version));
 
     telemetryService = builder.build();
     telemetryServices.set(clientExtensionId, telemetryService);
@@ -158,8 +158,8 @@ function registerTestCommands(context: ExtensionContext) {
   extension through command palette, can be removed later. 
   */
   context.subscriptions.push(
-    commands.registerCommand('vscodeCommons.showTelemetryStatus', () => {
-      getTelemetryService('redhat.vscode-commons').send({
+    commands.registerCommand('vscodeCommons.showTelemetryStatus', async () => {
+      (await getTelemetryService('redhat.vscode-commons')).send({
         name: 'test',
         properties: {
           payload: 'Lorem Ipsum...',
