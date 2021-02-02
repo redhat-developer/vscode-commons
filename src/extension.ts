@@ -1,13 +1,13 @@
 import { TelemetryService, TelemetryServiceBuilder } from '@redhat-developer/vscode-redhat-telemetry';
-import { FileSystemIdManager } from '@redhat-developer/vscode-redhat-telemetry/lib/services/fileSystemIdManager';
 import { Logger } from '@redhat-developer/vscode-redhat-telemetry/lib/utils/logger';
 import { getEnvironment } from '@redhat-developer/vscode-redhat-telemetry/lib/utils/platform-node';
 import { commands, ConfigurationChangeEvent, Disposable, ExtensionContext, extensions, Uri, window, workspace } from 'vscode';
 import { VSCodeSettings } from './services/settings-vscode';
 import { CONFIG_KEY, OPT_IN_STATUS_KEY, OPT_OUT_INSTRUCTIONS_URL, PRIVACY_STATEMENT_URL } from './utils/constants';
+import { IdManagerFactory } from './services/idManagerFactory';
 
 const telemetryServices = new Map<string, TelemetryService>();
-const idManager = new FileSystemIdManager();
+const idManager = IdManagerFactory.getIdManager();
 
 let settings: VSCodeSettings;
 let defaultSegmentWriteKey: string;
@@ -51,8 +51,6 @@ export async function activate(context: ExtensionContext) {
   return Promise.resolve({
     getTelemetryService,
     getRedHatUUID,
-    // MUST BE REMOVED BEFORE RELEASE
-    viewMessage,
   });
 }
 
@@ -68,14 +66,14 @@ async function getTelemetryService(clientExtensionId: string): Promise<Telemetry
       .setIdManager(idManager)
       .setEnvironment(await getEnvironment(clientExtensionId, packageJson.version));
 
-    telemetryService = builder.build();
+    telemetryService = await builder.build();
     telemetryServices.set(clientExtensionId, telemetryService);
   }
   return telemetryService;
 }
 
 /* returns the Red Hat anonymous uuid used by vscode-commons */
-function getRedHatUUID() {
+function getRedHatUUID(): Promise<string> {
   return idManager.getRedHatUUID();
 }
 
@@ -117,7 +115,7 @@ export function openTelemetryOptInDialogIfNeeded(context: ExtensionContext) {
 
     window
       .showInformationMessage(message, 'Accept', 'Deny')
-      .then((selection) => {
+      .then(async (selection) => {
         if (!selection) {
           //close was chosen. Ask next time.
           return;
@@ -129,7 +127,7 @@ export function openTelemetryOptInDialogIfNeeded(context: ExtensionContext) {
         if (optIn) {
           //increase the chances of writing the anonymousUUID on disk 
           // before any other extension 
-          getRedHatUUID();
+          await getRedHatUUID();
         }
         settings.updateTelemetryEnabledConfig(optIn);
       });
@@ -170,7 +168,7 @@ function registerTestCommands(context: ExtensionContext) {
         `Red Hat Telemetry Enabled: ${settings.isTelemetryEnabled()}`
       );
       window.showInformationMessage(
-        `Red Hat anonymous Id : ${getRedHatUUID()}`
+        `Red Hat anonymous Id : ${await getRedHatUUID()}`
       );
     })
   );
@@ -183,10 +181,6 @@ function registerTestCommands(context: ExtensionContext) {
         .update('enabled', undefined, true);
     })
   );
-}
-
-function viewMessage(msg: string) {
-  window.showInformationMessage(`Msg Received in vscode-commons:  ${msg}`);
 }
 
 function getPackageJson(extensionId: string): any {
