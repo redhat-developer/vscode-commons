@@ -11,12 +11,10 @@ vsc-extension-quickstart.md
 **/*.map
 **/*.ts
 Jenkinsfile
-*.md
-!README.md
-!CHANGELOG.md
+INSTRUCTIONS.md
+USAGE_DATA.md
 .prettierrc
 build/**
 .github/**
-images/**
 target/**
 report.xml

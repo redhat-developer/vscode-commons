@@ -1,8 +1,8 @@
 {
   "name": "vscode-commons",
   "displayName": "Red Hat Commons",
-  "description": "Base utilities for Red Hat extensions. Notably controls Telemetry settings.",
-  "version": "0.0.1",
+  "description": "Base utilities for Red Hat extensions. Notably controls  telemetry settings.",
+  "version": "0.0.2",
   "publisher": "redhat",
   "license": "Apache-2.0",
   "bugs": "https://github.com/redhat-developer/vscode-commons/issues",
@@ -19,6 +19,7 @@
   "categories": [
     "Other"
   ],
+  "preview": true,
   "activationEvents": [],
   "main": "./dist/extension.js",
   "contributes": {

@@ -67,9 +67,8 @@ node('rhel8'){
     archive includes:"**.vsix"
 
     if (params.UPLOAD_LOCATION) {
-      stage "Promote build to stable/ directory" {
-        sh "rsync -Pzrlt --rsh=ssh --protocol=28 *.vsix* ${UPLOAD_LOCATION}/stable/vscode-commons/"
-      }
+      stage "Promote build to stable/ directory"
+      sh "rsync -Pzrlt --rsh=ssh --protocol=28 *.vsix* ${UPLOAD_LOCATION}/stable/vscode-commons/"
     }
   }
 }
