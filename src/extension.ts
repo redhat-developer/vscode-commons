@@ -3,7 +3,7 @@ import { Logger } from '@redhat-developer/vscode-redhat-telemetry/lib/utils/logg
 import { getEnvironment } from '@redhat-developer/vscode-redhat-telemetry/lib/utils/platform-node';
 import { commands, ConfigurationChangeEvent, Disposable, ExtensionContext, extensions, Uri, window, workspace } from 'vscode';
 import { VSCodeSettings } from './services/settings-vscode';
-import { CONFIG_KEY, OPT_IN_STATUS_KEY, OPT_OUT_INSTRUCTIONS_URL, PRIVACY_STATEMENT_URL } from './utils/constants';
+import { OPT_IN_STATUS_KEY, OPT_OUT_INSTRUCTIONS_URL, PRIVACY_STATEMENT_URL } from './utils/constants';
 import { IdManagerFactory } from './services/idManagerFactory';
 
 const telemetryServices = new Map<string, TelemetryService>();
@@ -28,9 +28,6 @@ export async function activate(context: ExtensionContext) {
   listener for configuration change
   */
   context.subscriptions.push(onDidChangeTelemetryEnabled());
-
-  // MUST BE REMOVED BEFORE RELEASE
-  registerTestCommands(context);
 
   openTelemetryOptInDialogIfNeeded(context);
 
@@ -147,40 +144,6 @@ export function deactivate() {
     telemetryService.sendShutdownEvent();
     telemetryService.dispose();
   });
-}
-
-// THOSE FUNCTIONS MUST BE REMOVED BEFORE RELEASE
-function registerTestCommands(context: ExtensionContext) {
-  /* 
-  test command to activate and  view telemetry status of 
-  extension through command palette, can be removed later. 
-  */
-  context.subscriptions.push(
-    commands.registerCommand('vscodeCommons.showTelemetryStatus', async () => {
-      (await getTelemetryService('redhat.vscode-commons')).send({
-        name: 'test',
-        properties: {
-          payload: 'Lorem Ipsum...',
-          extensions: ['one', 'two', 'three']
-        }
-      });
-      window.showInformationMessage(
-        `Red Hat Telemetry Enabled: ${settings.isTelemetryEnabled()}`
-      );
-      window.showInformationMessage(
-        `Red Hat anonymous Id : ${await getRedHatUUID()}`
-      );
-    })
-  );
-
-  context.subscriptions.push(
-    commands.registerCommand('vscodeCommons.clearStateAndSettings', () => {
-      context.globalState.update(OPT_IN_STATUS_KEY, undefined);
-      return workspace
-        .getConfiguration(CONFIG_KEY)
-        .update('enabled', undefined, true);
-    })
-  );
 }
 
 function getPackageJson(extensionId: string): any {

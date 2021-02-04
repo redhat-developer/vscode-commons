@@ -19,22 +19,9 @@
   "categories": [
     "Other"
   ],
-  "activationEvents": [
-    "onCommand:vscodeCommons.clearStateAndSettings",
-    "onCommand:vscodeCommons.showTelemetryStatus"
-  ],
+  "activationEvents": [],
   "main": "./dist/extension.js",
   "contributes": {
-    "commands": [
-      {
-        "command": "vscodeCommons.clearStateAndSettings",
-        "title": "Clear context.globalState and VS Code settings"
-      },
-      {
-        "command": "vscodeCommons.showTelemetryStatus",
-        "title": "Show Telemetry Status"
-      }
-    ],
     "configuration": {
       "title": "Red Hat",
       "properties": {
@@ -80,6 +67,6 @@
     "webpack-cli": "^3.3.12"
   },
   "dependencies": {
-    "@redhat-developer/vscode-redhat-telemetry": "0.0.11"
+    "@redhat-developer/vscode-redhat-telemetry": "0.0.12"
   }
 }
