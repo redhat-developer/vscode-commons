@@ -12,6 +12,8 @@ vsc-extension-quickstart.md
 **/*.ts
 Jenkinsfile
 *.md
+!README.md
+!CHANGELOG.md
 .prettierrc
 build/**
 .github/**
