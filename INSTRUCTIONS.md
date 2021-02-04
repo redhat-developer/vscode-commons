@@ -51,6 +51,20 @@ import { getRedHatUUID } from "@redhat-developer/vscode-redhat-telemetry";
 const REDHAT_UUID = await getRedHatUUID();
 ```
 
+Once your extension has registered a `TelemetryService` instance, a shutdown event, including the session duration, will automatically be sent on its behalf, when VS Code shuts down. However, shutdown event delivery is not guaranteed, as it VS Code might be faster to shutdown than to send those last events.
+
+
+## Publicly document your data collection
+
+Once telemetry is in place, you need to document the extent of the telemetry collection performed by your extension.
+* add a USAGE_DATA.md page to your extension's repository, listing the type of data being collected by your extension.
+* add a `Data and Telemetry` paragraph at the end of your extension's README file:
+> `The ***** extension collects anonymous [usage data](USAGE_DATA.md) and sends it to Red Hat servers to help improve our products and services. Read our [privacy statement](https://developers.redhat.com/article/tool-data-collection) to learn more. This extension respects the `redhat.elemetry.enabled` setting which you can learn more about at https://github.com/redhat-developer/vscode-commons#how-to-disable-telemetry-reporting`
+
+* add a reference to your telemetry documentation page to this repository's own [USAGE_DATA.md](https://github.com/redhat-developer/vscode-commons/blob/master/USAGE_DATA.md#other-extensions).
+
+
+
 ## CI builds
 CI builds can be installed manually by following these instructions:
 

@@ -10,6 +10,11 @@ The first time one of Red Hat extension engaging in telemetry collection runs, y
 
 Whether you accept or deny the request, this pop up will not show again.
 
+You can also opt-in later, by setting the `redhat.telemetry.enabled` user setting to `true`.
+
+From File > Preferences > Settings (On macOS: Code > Preferences > Settings), search for telemetry, and check the `Redhat > Telemetry : Enabled` setting. This will enable all telemetry events from Red Hat extensions going forward.
+
+
 ## How to disable telemetry reporting?
 If you want to stop sending usage data to Red Hat, you can set the `redhat.telemetry.enabled` user setting to `false`.
 
