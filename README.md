@@ -1,3 +1,5 @@
+[![Marketplace Version](https://vsmarketplacebadge.apphb.com/version/redhat.vscode-commons.svg "Current Release")](https://marketplace.visualstudio.com/items?itemName=redhat.vscode-commons)
+
 # Red Hat Commons
 Red Hat Commons provides services common to extensions published by Red Hat. It's an extension library that has no use being installed on its own.
 
