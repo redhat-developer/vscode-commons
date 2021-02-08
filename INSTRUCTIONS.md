@@ -63,7 +63,25 @@ Once telemetry is in place, you need to document the extent of the telemetry col
 
 * add a reference to your telemetry documentation page to this repository's own [USAGE_DATA.md](https://github.com/redhat-developer/vscode-commons/blob/master/USAGE_DATA.md#other-extensions).
 
-
+## Turn on logging during development
+In your `.vscode/launch.json`, set the `VSCODE_REDHAT_TELEMETRY_DEBUG` environment variable to `true`:
+```json
+{
+  "name": "Run Extension",
+  "type": "extensionHost",
+  "request": "launch",
+  "args": [
+    "--extensionDevelopmentPath=${workspaceFolder}"
+  ],
+  "outFiles": [
+    "${workspaceFolder}/dist/**/*.js"
+  ],
+  "preLaunchTask": "${defaultBuildTask}",
+  "env": {
+    "VSCODE_REDHAT_TELEMETRY_DEBUG":"true"
+  }
+},
+```
 
 ## CI builds
 CI builds can be installed manually by following these instructions:
