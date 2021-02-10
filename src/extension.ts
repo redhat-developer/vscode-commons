@@ -12,7 +12,8 @@ const idManager = IdManagerFactory.getIdManager();
 let settings: VSCodeSettings;
 let defaultSegmentWriteKey: string;
 let defaultSegmentWriteKeyDebug: string;
-
+let retryOptin: NodeJS.Timeout;
+const RETRY_OPTIN_DELAY = 86400000;// 24h
 // this method is called when your extension is activated
 export async function activate(context: ExtensionContext) {
   Logger.log('"vscode-commons" is now active!');
@@ -99,14 +100,21 @@ function onDidChangeTelemetryEnabled(): Disposable {
 
 async function openTelemetryOptInDialogIfNeeded(context: ExtensionContext) {
   logTelemetryStatus();
-  const optInRequested: boolean | undefined = context.globalState.get(
-    OPT_IN_STATUS_KEY
-  );
+  const optInRequested: boolean | undefined = context.globalState.get(OPT_IN_STATUS_KEY);
+
   Logger.log(`optInRequested is: ${optInRequested}`);
 
   if (optInRequested) {
+    if (retryOptin) {
+      clearInterval(retryOptin);
+    }
     return;
   }
+
+  if (!retryOptin) {
+    retryOptin = setInterval(openTelemetryOptInDialogIfNeeded, RETRY_OPTIN_DELAY, context);
+  }
+
   const command: string = 'vscodeCommons.openWebPage';
   const message: string = `Help Red Hat improve its extensions by allowing them to collect usage data. 
     Read our [privacy statement](command:${command}?"${PRIVACY_STATEMENT_URL}") 
@@ -117,7 +125,7 @@ async function openTelemetryOptInDialogIfNeeded(context: ExtensionContext) {
     //close was chosen. Ask next time.
     return;
   }
-
+  clearInterval(retryOptin);
   context.globalState.update(OPT_IN_STATUS_KEY, true);
 
   const optIn: boolean = selection === 'Accept';
