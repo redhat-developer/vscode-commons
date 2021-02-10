@@ -112,12 +112,13 @@ async function openTelemetryOptInDialogIfNeeded(context: ExtensionContext) {
     Read our [privacy statement](command:${command}?"${PRIVACY_STATEMENT_URL}") 
   and learn how to [opt out](command:${command}?"${OPT_OUT_INSTRUCTIONS_URL}").`;
 
+  const retryOptin = setTimeout(openTelemetryOptInDialogIfNeeded, RETRY_OPTIN_DELAY_IN_MS, context);
   const selection = await window.showInformationMessage(message, 'Accept', 'Deny');
   if (!selection) {
     //close was chosen. Ask next time.
-    setTimeout(openTelemetryOptInDialogIfNeeded, RETRY_OPTIN_DELAY_IN_MS, context);
     return;
   }
+  clearTimeout(retryOptin);
   context.globalState.update(OPT_IN_STATUS_KEY, true);
 
   const optIn: boolean = selection === 'Accept';
