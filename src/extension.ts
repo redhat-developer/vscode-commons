@@ -12,8 +12,7 @@ const idManager = IdManagerFactory.getIdManager();
 let settings: VSCodeSettings;
 let defaultSegmentWriteKey: string;
 let defaultSegmentWriteKeyDebug: string;
-let retryOptin: NodeJS.Timeout;
-const RETRY_OPTIN_DELAY = 86400000;// 24h
+const RETRY_OPTIN_DELAY_IN_MS = 24 * 60 * 60 * 1000; // 24h
 // this method is called when your extension is activated
 export async function activate(context: ExtensionContext) {
   Logger.log('"vscode-commons" is now active!');
@@ -105,14 +104,7 @@ async function openTelemetryOptInDialogIfNeeded(context: ExtensionContext) {
   Logger.log(`optInRequested is: ${optInRequested}`);
 
   if (optInRequested) {
-    if (retryOptin) {
-      clearInterval(retryOptin);
-    }
     return;
-  }
-
-  if (!retryOptin) {
-    retryOptin = setInterval(openTelemetryOptInDialogIfNeeded, RETRY_OPTIN_DELAY, context);
   }
 
   const command: string = 'vscodeCommons.openWebPage';
@@ -120,12 +112,13 @@ async function openTelemetryOptInDialogIfNeeded(context: ExtensionContext) {
     Read our [privacy statement](command:${command}?"${PRIVACY_STATEMENT_URL}") 
   and learn how to [opt out](command:${command}?"${OPT_OUT_INSTRUCTIONS_URL}").`;
 
+  const retryOptin = setTimeout(openTelemetryOptInDialogIfNeeded, RETRY_OPTIN_DELAY_IN_MS, context);
   const selection = await window.showInformationMessage(message, 'Accept', 'Deny');
   if (!selection) {
     //close was chosen. Ask next time.
     return;
   }
-  clearInterval(retryOptin);
+  clearTimeout(retryOptin);
   context.globalState.update(OPT_IN_STATUS_KEY, true);
 
   const optIn: boolean = selection === 'Accept';
