@@ -30,7 +30,7 @@ export async function activate(context: ExtensionContext) {
   */
   context.subscriptions.push(onDidChangeTelemetryEnabled());
 
-  await openTelemetryOptInDialogIfNeeded(context);
+  openTelemetryOptInDialogIfNeeded(context);
 
   const telemetryService = await getTelemetryService('redhat.vscode-commons');
   context.subscriptions.push(telemetryService);
