@@ -145,11 +145,16 @@ export function openWebPage(url: string) {
 }
 
 // this method is called when your extension is deactivated
-export function deactivate() {
+export async function deactivate() {
+  const finishAll: Promise<void>[] = [];
   telemetryServices.forEach((telemetryService: TelemetryService, k: string) => {
-    telemetryService.sendShutdownEvent();
-    telemetryService.dispose();
+    finishAll.push(
+      telemetryService.sendShutdownEvent().then(() => {
+        telemetryService.dispose();
+      })
+    );
   });
+  return Promise.all(finishAll);
 }
 
 function getPackageJson(extensionId: string): any {
