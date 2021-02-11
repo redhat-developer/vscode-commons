@@ -18,7 +18,7 @@ Common events are reported:
 * when extension is shutdown
     - duration of the session
 
-The implementation of telemetry collection can be found in https://github.com/redhat-developer/vscode-redhat-telemetry 
+The implementation of telemetry collection can be found in https://github.com/redhat-developer/vscode-redhat-telemetry
 
 ### Other extensions
 Red Hat extensions' specific telemetry collection details can be found there:
@@ -29,3 +29,4 @@ Red Hat extensions' specific telemetry collection details can be found there:
 * [Remote Server Protocol](https://github.com/redhat-developer/vscode-rsp-ui/blob/master/USAGE_DATA.md)
 * [Tekton Pipelines](https://github.com/redhat-developer/vscode-tekton/blob/master/USAGE_DATA.md)
 * [Tooling for Apache Camel K](https://github.com/camel-tooling/vscode-camelk/blob/master/USAGE_DATA.md)
+* [XML](https://github.com/redhat-developer/vscode-xml/blob/master/USAGE_DATA.md)
