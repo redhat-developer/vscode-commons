@@ -53,6 +53,8 @@ const REDHAT_UUID = await getRedHatUUID();
 
 Once your extension has registered a `TelemetryService` instance, a shutdown event, including the session duration, will automatically be sent on its behalf, when VS Code shuts down. However, shutdown event delivery is not guaranteed, as it VS Code might be faster to shutdown than to send those last events.
 
+Starting with vscode-commons 0.0.5, all event properties are automatically sanitized to anonymize all paths (best effort) and references to the username.
+
 
 ## Publicly document your data collection
 
