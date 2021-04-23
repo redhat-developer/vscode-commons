@@ -30,6 +30,8 @@ Red Hat extensions' specific telemetry collection details can be found there:
 * [OpenShift Connector](https://github.com/redhat-developer/vscode-openshift-tools/blob/master/USAGE_DATA.md)
 * [Project Initializer](https://github.com/redhat-developer/vscode-project-initializer/blob/master/USAGE_DATA.md)
 * [Quarkus](https://github.com/redhat-developer/vscode-quarkus/blob/master/USAGE_DATA.md)
+* [Red Hat Authentication](https://github.com/redhat-developer/vscode-redhat-account/blob/master/USAGE_DATA.md)
+* [Red Hat OpenShift Application Services](https://github.com/redhat-developer/vscode-rhoas/blob/master/USAGE_DATA.md)
 * [Remote Server Protocol](https://github.com/redhat-developer/vscode-rsp-ui/blob/master/USAGE_DATA.md)
 * [Tekton Pipelines](https://github.com/redhat-developer/vscode-tekton/blob/master/USAGE_DATA.md)
 * [Tooling for Apache Camel K](https://github.com/camel-tooling/vscode-camelk/blob/master/USAGE_DATA.md)
