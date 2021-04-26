@@ -101,7 +101,7 @@ async function openTelemetryOptInDialogIfNeeded(context: ExtensionContext) {
   logTelemetryStatus();
   const optInRequested: boolean | undefined = context.globalState.get(OPT_IN_STATUS_KEY);
 
-  Logger.log(`optInRequested is: ${optInRequested}`);
+  Logger.log(`${OPT_IN_STATUS_KEY} is: ${optInRequested}`);
 
   if (optInRequested) {
     return;
