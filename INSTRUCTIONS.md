@@ -8,7 +8,7 @@ Start by adding `redhat.vscode-commons` to the `extensionDependencies` section o
 
 ## Add the "@redhat-developer/vscode-redhat-telemetry" dependency
 
-You need to install `@redhat-developer/vscode-redhat-telemetry`, a thin wrapper for `redhat.vscode-commons`'s API. Open a terminal and execute:
+You need to install [`@redhat-developer/vscode-redhat-telemetry`](https://github.com/redhat-developer/vscode-redhat-telemetry/), a thin wrapper for `redhat.vscode-commons`'s API. Open a terminal and execute:
 
 ```
 npm i @redhat-developer/vscode-redhat-telemetry

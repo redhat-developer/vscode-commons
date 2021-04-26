@@ -68,6 +68,6 @@
     "webpack-cli": "^4.6.0"
   },
   "dependencies": {
-    "@redhat-developer/vscode-redhat-telemetry": "0.0.15"
+    "@redhat-developer/vscode-redhat-telemetry": "0.0.17"
   }
 }
