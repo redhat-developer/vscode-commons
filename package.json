@@ -2,7 +2,7 @@
   "name": "vscode-commons",
   "displayName": "Red Hat Commons",
   "description": "Base utilities for Red Hat extensions. Notably controls telemetry settings.",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "publisher": "redhat",
   "license": "Apache-2.0",
   "bugs": "https://github.com/redhat-developer/vscode-commons/issues",
@@ -68,6 +68,6 @@
     "webpack-cli": "^4.6.0"
   },
   "dependencies": {
-    "@redhat-developer/vscode-redhat-telemetry": "0.0.17"
+    "@redhat-developer/vscode-redhat-telemetry": "0.0.18"
   }
 }
